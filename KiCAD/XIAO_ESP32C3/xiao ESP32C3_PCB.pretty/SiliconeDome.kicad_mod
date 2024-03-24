@@ -1,0 +1,244 @@
+(footprint "SiliconeDome"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -4.8 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "34479154-1391-4c4e-b65f-9ffff37d4fa2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SiliconeDome"
+		(at 0 4.2 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "3ae04f6c-9784-470c-a2ec-12f1750308d1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7b1bc368-cef6-4693-adff-4b765a38f57d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ef365fee-fbd0-432c-9277-1cad5c8871ab")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "94add97b-8c27-475c-9346-922e9e6c9536")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_arc
+		(start -3.6 -0.9)
+		(mid -0.012452 -3.710774)
+		(end 3.593879 -0.92414)
+		(stroke
+			(width 0.127)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "49f2919e-1529-4e21-a214-a0a2c6f565d2")
+	)
+	(fp_arc
+		(start 3.554297 1.066289)
+		(mid -0.086228 3.709793)
+		(end -3.6 0.9)
+		(stroke
+			(width 0.127)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "d7012270-f2da-44f7-adb3-a0651a911b1b")
+	)
+	(fp_line
+		(start 0 0)
+		(end -2.9 0)
+		(stroke
+			(width 0.4)
+			(type default)
+		)
+		(layer "F.Mask")
+		(uuid "83d7b469-9874-422f-b9c4-e4d8a8e76bbd")
+	)
+	(fp_line
+		(start 1 0)
+		(end 2.9 0)
+		(stroke
+			(width 0.4)
+			(type default)
+		)
+		(layer "F.Mask")
+		(uuid "f818fc09-9985-498e-aad5-2a1116678f76")
+	)
+	(fp_arc
+		(start -2.2 -0.7)
+		(mid 2.308679 0)
+		(end -2.2 0.7)
+		(stroke
+			(width 0.4)
+			(type default)
+		)
+		(layer "F.Mask")
+		(uuid "a55abf9a-ec5b-42f5-af6e-5ee70d701625")
+	)
+	(fp_arc
+		(start -0.6 -0.7)
+		(mid 0.921954 0)
+		(end -0.6 0.7)
+		(stroke
+			(width 0.4)
+			(type default)
+		)
+		(layer "F.Mask")
+		(uuid "ea47a595-5193-4621-b373-80b5605987fc")
+	)
+	(fp_arc
+		(start 1.399999 0.7)
+		(mid -1.565247 0)
+		(end 1.399999 -0.7)
+		(stroke
+			(width 0.4)
+			(type default)
+		)
+		(layer "F.Mask")
+		(uuid "76c551c6-abdd-42bc-97ef-ca805d981830")
+	)
+	(fp_arc
+		(start 2.899999 0.7)
+		(mid -2.983286 0)
+		(end 2.899999 -0.7)
+		(stroke
+			(width 0.4)
+			(type default)
+		)
+		(layer "F.Mask")
+		(uuid "e50c5c8e-09dd-45a3-ac30-65c1ae17e46e")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 0.24 0)
+		(stroke
+			(width 0.36)
+			(type solid)
+		)
+		(fill solid)
+		(layer "F.Mask")
+		(uuid "9336f646-1549-4192-a972-eb8377dc77b9")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 5.7 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "df3dca45-69d6-4598-8f47-86fcc68878a5")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd custom
+		(at -4 0)
+		(size 1 1)
+		(layers "F.Cu")
+		(thermal_bridge_angle 90)
+		(options
+			(clearance outline)
+			(anchor circle)
+		)
+		(primitives
+			(gr_line
+				(start 0 0)
+				(end 4 0)
+				(width 0.36)
+			)
+			(gr_circle
+				(center 4 0)
+				(end 4.223607 0)
+				(width 0.36)
+				(fill yes)
+			)
+			(gr_arc
+				(start 5.399999 0.7)
+				(mid 2.434753 0)
+				(end 5.399999 -0.7)
+				(width 0.36)
+			)
+			(gr_arc
+				(start 6.899999 0.7)
+				(mid 1.016714 0)
+				(end 6.899999 -0.7)
+				(width 0.36)
+			)
+		)
+		(uuid "6e3a88ac-cfef-4600-a817-b0307958fcca")
+	)
+	(pad "2" smd custom
+		(at 4 0 180)
+		(size 1 1)
+		(layers "F.Cu")
+		(thermal_bridge_angle 90)
+		(options
+			(clearance outline)
+			(anchor circle)
+		)
+		(primitives
+			(gr_line
+				(start 3.086747 0.006402)
+				(end 0 0)
+				(width 0.36)
+			)
+			(gr_arc
+				(start 6.208679 0.7)
+				(mid 1.7 0)
+				(end 6.208679 -0.7)
+				(width 0.36)
+			)
+			(gr_arc
+				(start 4.608679 0.7)
+				(mid 3.086747 0.006402)
+				(end 4.5989 -0.708265)
+				(width 0.36)
+			)
+		)
+		(uuid "e387ca78-c732-4bff-945a-9f88ad4b99c2")
+	)
+)
