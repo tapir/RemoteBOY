@@ -1,9 +1,11 @@
 #include "BLERemote.h"
+#include "Pins.h"
 
 BLERemote remote;
 
 void setup() {
   Serial.begin(9600);
+  setupPins();
   remote.begin();
 }
 
