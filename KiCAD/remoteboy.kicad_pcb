@@ -10167,8 +10167,8 @@
 		(uuid "fda7a693-fa3f-4b84-bb08-a57510fd4abe")
 	)
 	(gr_rect
-		(start 51.8 127.15)
-		(end 91.8 147.15)
+		(start 50.8 126.6)
+		(end 92.8 148.6)
 		(stroke
 			(width 0.15)
 			(type default)
