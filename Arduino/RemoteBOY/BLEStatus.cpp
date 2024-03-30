@@ -2,7 +2,7 @@
 
 BLEStatus::BLEStatus(void) {}
 
-void BLEStatus::onConnect(NimBLEServer *pServer, ble_gap_conn_desc* desc){
+void BLEStatus::onConnect(NimBLEServer *pServer, ble_gap_conn_desc* desc) {
   this->connected = true;
 }
 

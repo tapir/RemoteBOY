@@ -32,9 +32,8 @@ private:
   uint8_t batteryLevel;
   static void taskServer(void* pvParameter);
 public:
-  BLERemote(std::string deviceName = "RemoteBOY", std::string deviceManufacturer = "Lola Engineering", uint8_t batteryLevel = 100);
-  void begin(void);
-  void end(void);
+  BLERemote(void);
+  void setup(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel);
   void click(const ButtonReport b);
   void press(const ButtonReport b);
   void release(const ButtonReport b);

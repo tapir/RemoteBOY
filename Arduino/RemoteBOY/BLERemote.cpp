@@ -53,7 +53,9 @@ static const uint8_t _hidReportDescriptor[] = {
   END_COLLECTION(0)                       // END COLLECTION
 };
 
-BLERemote::BLERemote(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel) {
+BLERemote::BLERemote(void) {}
+
+void BLERemote::setup(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel) {
   this->_consumerButtons[0] = 0;
   this->_consumerButtons[1] = 0;
   this->hid = 0;
@@ -61,13 +63,8 @@ BLERemote::BLERemote(std::string deviceName, std::string deviceManufacturer, uin
   this->deviceManufacturer = deviceManufacturer;
   this->batteryLevel = batteryLevel;
   this->connectionStatus = new BLEStatus();
-}
-
-void BLERemote::begin(void) {
   xTaskCreate(this->taskServer, "server", 20000, (void *)this, 1, NULL);
 }
-
-void BLERemote::end(void) {}
 
 void BLERemote::press(const ButtonReport b) {
   uint16_t b_16 = b[1] | (b[0] << 8);
