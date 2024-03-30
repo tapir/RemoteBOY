@@ -3,20 +3,21 @@
 #include "KeyMatrix.h"
 #include "Button.h"
 #include "Battery.h"
+#include "LED.h"
 
 static const size_t NUM_BUTTONS = NUM_ROWS * NUM_COLS;
 
 // button IDs
-static const int BTN_ID_POWER   = 0;
-static const int BTN_ID_SELECT  = 1;
-static const int BTN_ID_UP      = 2;
-static const int BTN_ID_LEFT    = 3;
-static const int BTN_ID_RIGHT   = 4;
-static const int BTN_ID_DOWN    = 5;
-static const int BTN_ID_BACK    = 6;
-static const int BTN_ID_VOLUP   = 7;
-static const int BTN_ID_HOME    = 8;
-static const int BTN_ID_VOLDOWN = 9;
+static const uint8_t BTN_ID_POWER   = 0;
+static const uint8_t BTN_ID_SELECT  = 1;
+static const uint8_t BTN_ID_UP      = 2;
+static const uint8_t BTN_ID_LEFT    = 3;
+static const uint8_t BTN_ID_RIGHT   = 4;
+static const uint8_t BTN_ID_DOWN    = 5;
+static const uint8_t BTN_ID_BACK    = 6;
+static const uint8_t BTN_ID_VOLUP   = 7;
+static const uint8_t BTN_ID_HOME    = 8;
+static const uint8_t BTN_ID_VOLDOWN = 9;
 
 // mapping of button IDs to key matrix {row, col}
 static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
@@ -27,6 +28,9 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
 // battery state
 Battery battery;
 uint8_t prevBatteryLevel = 100;
+
+// led state
+LED leds;
 
 // key matrix state
 KeyMatrix matrix;
@@ -56,6 +60,7 @@ void stateChangeFunc(int buttonID, bool state) {
 
 void setup() {
   battery.setup();
+  leds.setup();
   blRemote.setup("RemoteBOY", "Lola Engineering", battery.getLevel());
   irRemote.setup();
   matrix.setup();
@@ -76,7 +81,13 @@ void loop() {
     blRemote.setBatteryLevel(currBatteryLevel);
   }
   // low battery indicator
-  // TODO
+  if (battery.getLevel() <= 10) {
+    leds.setBlinkFlag(LED1, true);
+    leds.setBlinkFlag(LED2, true);
+  } else {
+    leds.setBlinkFlag(LED1, false);
+    leds.setBlinkFlag(LED2, false);   
+  }
 
   // scan key matrix
   matrix.loop();
@@ -85,4 +96,7 @@ void loop() {
   for (int i = 0; i < NUM_BUTTONS; i++) {
     buttons[i].loop();
   }
+
+  // led process
+  leds.loop();
 }

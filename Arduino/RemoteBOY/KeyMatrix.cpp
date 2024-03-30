@@ -1,13 +1,13 @@
 #include "KeyMatrix.h"
 #include <Arduino.h>
 
-static const int PIN_COL_1   =  D6;
-static const int PIN_COL_2   =  D10;
-static const int PIN_ROW_1   =  D2;
-static const int PIN_ROW_2   =  D1;
-static const int PIN_ROW_3   =  D9;
-static const int PIN_ROW_4   =  D8;
-static const int PIN_ROW_5   =  D7;
+static const uint8_t PIN_COL_1   =  D6;
+static const uint8_t PIN_COL_2   =  D10;
+static const uint8_t PIN_ROW_1   =  D2;
+static const uint8_t PIN_ROW_2   =  D1;
+static const uint8_t PIN_ROW_3   =  D9;
+static const uint8_t PIN_ROW_4   =  D8;
+static const uint8_t PIN_ROW_5   =  D7;
 static const int rowPins[NUM_ROWS] = {PIN_ROW_1, PIN_ROW_2, PIN_ROW_3, PIN_ROW_4, PIN_ROW_5};
 static const int colPins[NUM_COLS] = {PIN_COL_1, PIN_COL_2};
 
