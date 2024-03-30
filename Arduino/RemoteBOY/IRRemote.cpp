@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-static const int PIN_LED_IR = D5;
+static const uint8_t PIN_LED_IR = D5;
 
 IRRemote::IRRemote() {}
 
