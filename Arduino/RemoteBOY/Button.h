@@ -1,7 +1,7 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include "stdint.h"
+#include <stdint.h>
 
 class Button {
 public:

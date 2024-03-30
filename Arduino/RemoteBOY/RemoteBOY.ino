@@ -20,16 +20,8 @@ static const int BTN_ID_VOLDOWN = 9;
 
 // mapping of button IDs to key matrix {row, col}
 static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
-  {0, 1},
-  {1, 1},
-  {0, 0},
-  {1, 0},
-  {2, 1},
-  {2, 0},
-  {3, 0},
-  {3, 1},
-  {4, 0},
-  {4, 1}
+  {0, 1}, {1, 1}, {0, 0}, {1, 0}, {2, 1},
+  {2, 0}, {3, 0}, {3, 1}, {4, 0}, {4, 1}
 };
 
 // battery state
@@ -48,15 +40,15 @@ BLERemote blRemote;
 // infrared sender
 IRRemote irRemote;
 
-// this func is called by each button to read the state instead of digitalRead() because
-// we operate with a key matrix and not "a pin per button". key matrix will keep all
+// this func is called by each button to read the pin state instead of digitalRead() because
+// we operate with a key matrix and not "a pin per button". key matrix object will keep all
 // states up to date as long as KeyMatrix::loop() is called.
 int readPinFunc(int buttonID) {
   return matrix.getKeyState(BTN_MATRIX_MAP[buttonID][0], BTN_MATRIX_MAP[buttonID][1]);
 }
 
 // this is where button event and button layer related logic happens
-// it's called buy each button whenever there is a state change (pressed&released)
+// it's called by each button whenever there is a state change (press & release)
 // is detected (debounced on both press and release).
 void stateChangeFunc(int buttonID, bool state) {
   // TODO
@@ -64,7 +56,7 @@ void stateChangeFunc(int buttonID, bool state) {
 
 void setup() {
   battery.setup();
-  blRemote.setup("RemoteBOY", "LolaEngineering", battery.getLevel());
+  blRemote.setup("RemoteBOY", "Lola Engineering", battery.getLevel());
   irRemote.setup();
   matrix.setup();
   for (int i = 0; i < NUM_BUTTONS; i++) {
