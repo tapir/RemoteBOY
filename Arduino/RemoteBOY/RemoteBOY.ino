@@ -33,7 +33,6 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
 
 // battery state
 Battery battery;
-uint8_t prevBatteryLevel = 100;
 
 // led state
 LED leds;
@@ -82,11 +81,7 @@ void loop() {
 
     // update battery level
     battery.loop();
-    uint8_t currBatteryLevel = battery.getLevel();
-    if (currBatteryLevel != prevBatteryLevel) {
-        prevBatteryLevel = currBatteryLevel;
-        blRemote.setBatteryLevel(currBatteryLevel);
-    }
+    blRemote.setBatteryLevel(battery.getLevel());
     // low battery indicator
     if (battery.getLevel() <= 10) {
         leds.setBlinkFlag(LED1, true);

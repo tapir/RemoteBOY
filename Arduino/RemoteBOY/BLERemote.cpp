@@ -105,9 +105,11 @@ bool BLERemote::isConnected(void) {
 }
 
 void BLERemote::setBatteryLevel(uint8_t level) {
-    this->batteryLevel = level;
-    if (hid != 0) {
-        this->hid->setBatteryLevel(this->batteryLevel);
+    if (level != this->batteryLevel) {
+        this->batteryLevel = level;
+        if (hid != 0) {
+            this->hid->setBatteryLevel(this->batteryLevel);
+        }
     }
 }
 
