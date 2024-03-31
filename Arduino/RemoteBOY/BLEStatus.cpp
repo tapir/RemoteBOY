@@ -1,15 +1,15 @@
 #include "BLEStatus.h"
 
-BLEStatus::BLEStatus(void) {}
+BLEStatus::BLEStatus(void) { }
 
-void BLEStatus::onConnect(NimBLEServer *pServer, ble_gap_conn_desc* desc) {
-  this->connected = true;
+void BLEStatus::onConnect(NimBLEServer* pServer, ble_gap_conn_desc* desc) {
+	this->connected = true;
 }
 
-void BLEStatus::onDisconnect(NimBLEServer *pServer) {
-  this->connected = false;
+void BLEStatus::onDisconnect(NimBLEServer* pServer) {
+	this->connected = false;
 }
 
-void BLEStatus::onAuthenticationComplete (ble_gap_conn_desc *desc) {
-  // TODO LED Stuff
+void BLEStatus::onAuthenticationComplete(ble_gap_conn_desc* desc) {
+	// TODO LED Stuff
 }

@@ -6,10 +6,10 @@
 
 class IRRemote {
 public:
-  IRRemote(void);
-  void setup(void);
+	IRRemote(void);
+	void setup(void);
+
 private:
-  
 };
 
 #endif // IRREMOTE_H

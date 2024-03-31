@@ -1,0 +1,11 @@
+BasedOnStyle: WebKit
+AlignConsecutiveMacros: 'true'
+AlignConsecutiveAssignments: 'true'
+AlignConsecutiveDeclarations: 'true'
+AlignTrailingComments: 'true'
+AllowAllArgumentsOnNextLine: 'true'
+AllowShortBlocksOnASingleLine: 'true'
+BreakBeforeBraces: Custom
+TabWidth: '4'
+UseTab: Always
+ColumnLimit: 0

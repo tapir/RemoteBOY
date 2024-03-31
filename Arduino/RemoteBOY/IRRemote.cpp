@@ -4,8 +4,8 @@
 
 static const uint8_t PIN_LED_IR = D5;
 
-IRRemote::IRRemote() {}
+IRRemote::IRRemote() { }
 
 void IRRemote::setup(void) {
-  pinMode(PIN_LED_IR, OUTPUT);
+	pinMode(PIN_LED_IR, OUTPUT);
 }

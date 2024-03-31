@@ -8,12 +8,13 @@ static const size_t NUM_COLS = 2;
 
 class KeyMatrix {
 public:
-  KeyMatrix(void);
-  void setup(void);
-  void loop(void);
-  int getKeyState(size_t row, size_t col);
+	KeyMatrix(void);
+	void setup(void);
+	void loop(void);
+	int	 getKeyState(size_t row, size_t col);
+
 private:
-  int state[NUM_ROWS][NUM_COLS];
+	int state[NUM_ROWS][NUM_COLS];
 };
 
 #endif // MATRIX_H
