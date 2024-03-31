@@ -105,17 +105,21 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
             }
             break;
         case BTN_ID_VOLUP:
-            if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
-                // TODO: IR vol mute
-            } else {
-                // TODO: IR vol up
+            if (state) {
+                if (buttons[BTN_ID_VOLDOWN].isPressed()) {
+                    irRemote.send(IR_REMOTE_VOLMUTE);
+                } else {
+                    irRemote.send(IR_REMOTE_VOLUP);
+                }
             }
             break;
         case BTN_ID_VOLDOWN:
-            if (state && buttons[BTN_ID_VOLUP].isPressed()) {
-                // TODO: IR vol mute
-            } else {
-                // TODO: IR vold down
+            if (state) {
+                if (buttons[BTN_ID_VOLUP].isPressed()) {
+                    irRemote.send(IR_REMOTE_VOLMUTE);
+                } else {
+                    irRemote.send(IR_REMOTE_VOLDOWN);
+                }
             }
             break;
         case BTN_ID_UP:
@@ -133,13 +137,15 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         }
     } else {
         // secondary layer
-        // power    IR
-        // select   IR
-        // d-pad    IR
-        // back     IR
-        // home     IR
-        // volume   IR
-        // mute     IR
+        // power            IR
+        // select           IR
+        // d-pad            IR
+        // back             IR
+        // home             IR
+        // mute             IR
+        // settings (volup) IR
+        // input (voldown)  IR
+        // mute             IR
 
         leds.turnOff(LED1);
         leds.turnOn(LED2);
@@ -154,55 +160,55 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
             if (buttons[BTN_ID_SELECT].isPressed()) {
                 blRemote.pairingMode = true;
             } else {
-                // TODO: IR
+                irRemote.send(IR_REMOTE_POWER);
             }
             break;
         case BTN_ID_SELECT:
             if (buttons[BTN_ID_POWER].isPressed()) {
                 blRemote.pairingMode = true;
             } else {
-                // TODO: IR
+                irRemote.send(IR_REMOTE_SELECT);
             }
             break;
         case BTN_ID_BACK:
             if (buttons[BTN_ID_HOME].isPressed()) {
                 layer = !layer;
             } else {
-                // TODO: IR
+                irRemote.send(IR_REMOTE_BACK);
             }
             break;
         case BTN_ID_HOME:
             if (buttons[BTN_ID_BACK].isPressed()) {
                 layer = !layer;
             } else {
-                // TODO: IR
+                irRemote.send(IR_REMOTE_HOME);
             }
             break;
         case BTN_ID_VOLUP:
             if (buttons[BTN_ID_VOLDOWN].isPressed()) {
-                // TODO: IR
+                irRemote.send(IR_REMOTE_VOLMUTE);
             } else {
-                // TODO: IR
+                irRemote.send(IR_REMOTE_SETTINGS);
             }
             break;
         case BTN_ID_VOLDOWN:
             if (buttons[BTN_ID_VOLUP].isPressed()) {
-                // TODO: IR
+                irRemote.send(IR_REMOTE_VOLMUTE);
             } else {
-                // TODO: IR
+                irRemote.send(IR_REMOTE_INPUT);
             }
             break;
         case BTN_ID_UP:
-            // TODO: IR
+            irRemote.send(IR_REMOTE_UP);
             break;
         case BTN_ID_LEFT:
-            // TODO: IR
+            irRemote.send(IR_REMOTE_LEFT);
             break;
         case BTN_ID_RIGHT:
-            // TODO: IR
+            irRemote.send(IR_REMOTE_RIGHT);
             break;
         case BTN_ID_DOWN:
-            // TODO: IR
+            irRemote.send(IR_REMOTE_DOWN);
             break;
         }
     }

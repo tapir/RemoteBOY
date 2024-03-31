@@ -9,17 +9,17 @@
 
 typedef uint8_t ButtonReport[2];
 
-const ButtonReport BLE_REMOTE_POWER   = { 1, 0 };
-const ButtonReport BLE_REMOTE_SELECT  = { 2, 0 };
-const ButtonReport BLE_REMOTE_BACK    = { 4, 0 };
-const ButtonReport BLE_REMOTE_HOME    = { 8, 0 };
-const ButtonReport BLE_REMOTE_VOLUP   = { 16, 0 };
-const ButtonReport BLE_REMOTE_VOLDOWN = { 32, 0 };
-const ButtonReport BLE_REMOTE_VOLMUTE = { 64, 0 };
-const ButtonReport BLE_REMOTE_UP      = { 128, 0 };
-const ButtonReport BLE_REMOTE_DOWN    = { 0, 1 };
-const ButtonReport BLE_REMOTE_LEFT    = { 0, 2 };
-const ButtonReport BLE_REMOTE_RIGHT   = { 0, 4 };
+static const ButtonReport BLE_REMOTE_POWER   = { 1, 0 };
+static const ButtonReport BLE_REMOTE_SELECT  = { 2, 0 };
+static const ButtonReport BLE_REMOTE_BACK    = { 4, 0 };
+static const ButtonReport BLE_REMOTE_HOME    = { 8, 0 };
+static const ButtonReport BLE_REMOTE_VOLUP   = { 16, 0 };
+static const ButtonReport BLE_REMOTE_VOLDOWN = { 32, 0 };
+static const ButtonReport BLE_REMOTE_VOLMUTE = { 64, 0 };
+static const ButtonReport BLE_REMOTE_UP      = { 128, 0 };
+static const ButtonReport BLE_REMOTE_DOWN    = { 0, 1 };
+static const ButtonReport BLE_REMOTE_LEFT    = { 0, 2 };
+static const ButtonReport BLE_REMOTE_RIGHT   = { 0, 4 };
 
 class BLERemote {
 private:
