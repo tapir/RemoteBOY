@@ -31,16 +31,17 @@ private:
     std::string           deviceName;
     uint8_t               batteryLevel;
     static void           taskServer(void* pvParameter);
+    void                  sendReport(void);
 
 public:
     BLERemote(void);
     void setup(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel);
-    void click(const ButtonReport b);
+    // void click(const ButtonReport b);
     void press(const ButtonReport b);
     void release(const ButtonReport b);
     bool isConnected(void);
     void setBatteryLevel(uint8_t level);
-    void sendReport(void);
+    bool pairingMode;
 
 protected:
     virtual void onStarted(NimBLEServer* pServer) {};

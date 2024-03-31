@@ -11,6 +11,7 @@ typedef struct LEDState {
     uint32_t lastUpdateBlink;
     bool     state;
     bool     blink;
+    bool     endless; // LEDs never turn off on their own
 };
 
 class LED {

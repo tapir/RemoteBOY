@@ -6,7 +6,7 @@
 class Button {
 public:
     Button(void);
-    void setup(int buttonID, uint16_t stateMask, void (*stateChangeCallback)(int, bool), int (*readPinCallback)(int));
+    void setup(uint8_t buttonID, uint16_t stateMask, void (*stateChangeCallback)(uint8_t, bool), int (*readPinCallback)(uint8_t));
     void loop(void);
     bool isPressed(void);
 
@@ -15,8 +15,8 @@ private:
     bool     state;
     uint16_t samples;
     uint16_t stateMask;
-    void (*stateChangeCallback)(int buttonID, bool state);
-    int (*readPinCallback)(int buttonID);
+    void (*stateChangeCallback)(uint8_t buttonID, bool state);
+    int (*readPinCallback)(uint8_t buttonID);
 };
 
 #endif // BUTTON_H

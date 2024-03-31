@@ -1,33 +1,33 @@
 #include "LED.h"
 #include <Arduino.h>
 
+static const size_t   NUM_LEDS            = 2;
 static const uint32_t LED_TOTAL_ON_TIME   = 5000; // stay on for 5 seconds
 static const uint32_t LED_BLINK_FREQUENCY = 500;  // blink every 0.5 seconds
 static const uint8_t  PIN_LED_2           = D3;
 static const uint8_t  PIN_LED_1           = D4;
-static const uint8_t  ledPins[2]          = { PIN_LED_2, PIN_LED_1 };
+static const uint8_t  ledPins[NUM_LEDS]   = { PIN_LED_2, PIN_LED_1 };
 
 LED::LED(void) { }
 
 void LED::setup(void) {
-    pinMode(PIN_LED_2, OUTPUT);
-    pinMode(PIN_LED_1, OUTPUT);
-    digitalWrite(PIN_LED_2, LOW);
-    digitalWrite(PIN_LED_1, LOW);
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < NUM_LEDS; i++) {
+        pinMode(ledPins[i], OUTPUT);
+        digitalWrite(ledPins[i], LOW);
         this->state[i].state           = false;
         this->state[i].blink           = false;
+        this->state[i].endless         = false;
         this->state[i].lastUpdateTotal = millis();
         this->state[i].lastUpdateBlink = millis();
     }
 }
 
 void LED::loop(void) {
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < NUM_LEDS; i++) {
         uint32_t currentTime = millis();
         if (this->state[i].state) {
             // check if it's time to turn LED off
-            if (currentTime - this->state[i].lastUpdateTotal > LED_TOTAL_ON_TIME) {
+            if (!this->state[i].endless && (currentTime - this->state[i].lastUpdateTotal > LED_TOTAL_ON_TIME)) {
                 this->turnOff(i);
             }
             // check if it's time to toggle for blink

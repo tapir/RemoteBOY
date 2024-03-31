@@ -2,8 +2,8 @@
 #include <Arduino.h>
 
 static const uint32_t BATT_UPDATE_FREQUENCY = 20000; // only update every 20s
-static const float    BATT_MAX_VOLTAGE      = 3.6;
-static const float    BATT_MIN_VOLTAGE      = 3.2;
+static const float    BATT_MAX_VOLTAGE      = 3.9;
+static const float    BATT_MIN_VOLTAGE      = 3.3;
 static const uint8_t  PIN_BATTERY           = A0;
 
 Battery::Battery(void) { }

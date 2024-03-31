@@ -2,7 +2,7 @@
 
 Button::Button(void) { }
 
-void Button::setup(int buttonID, uint16_t stateMask, void (*stateChangeCallback)(int, bool), int (*readPinCallback)(int)) {
+void Button::setup(uint8_t buttonID, uint16_t stateMask, void (*stateChangeCallback)(uint8_t, bool), int (*readPinCallback)(uint8_t)) {
     this->stateChangeCallback = stateChangeCallback;
     this->readPinCallback     = readPinCallback;
     this->buttonID            = buttonID;
