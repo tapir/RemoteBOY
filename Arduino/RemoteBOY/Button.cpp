@@ -19,9 +19,9 @@ void Button::setup(uint8_t buttonID, uint16_t stateMask, void (*stateChangeCallb
 void Button::loop(void) {
     bool reading  = this->readPinCallback(this->buttonID);
     this->samples = (this->samples << 1) | (this->state ^ reading) | this->stateMask;
-    if (state == 0xFFFF) {
+    if (this->samples == 0xFFFF) {
         this->state = reading;
-        this->stateChangeCallback(this->buttonID, this->state);
+        this->stateChangeCallback(this->buttonID, reading);
     }
 }
 

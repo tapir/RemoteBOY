@@ -28,8 +28,7 @@ void Battery::loop(void) {
         }
 
         // we have voltage divider of 2 and 16 samples, converted from mV to V
-        float vf = v * 8000;
-
+        float vf      = v * 8000.0;
         this->voltage = vf;
         if (vf >= BATT_MAX_VOLTAGE) {
             this->level = 100;

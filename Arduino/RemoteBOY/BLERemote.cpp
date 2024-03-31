@@ -18,38 +18,40 @@
 // static const char* LOG_TAG = "RemoteBOY";
 // #endif
 
-#define BLE_CONSUMER_REPORT_ID    0x01
-#define BLE_HID_REMOTE_APPEARANCE 384
-#define BLE_VEND_ID               0x0000
-#define BLE_PROD_ID               0x0000
-#define BLE_PROD_VER              0x0001
+static const uint8_t  BLE_CONSUMER_REPORT_ID    = 0x01;
+static const uint16_t BLE_HID_REMOTE_APPEARANCE = 0x0180;
+static const uint16_t BLE_VEND_ID               = 0x0000;
+static const uint8_t  BLE_VEND_SRC              = 0x02;
+static const uint16_t BLE_PROD_ID               = 0x0000;
+static const uint16_t BLE_PROD_VER              = 0x0001;
 
-static const uint8_t _hidReportDescriptor[] = {
-    USAGE_PAGE(1), 0x0C,                  // USAGE_PAGE (Consumer)
-    USAGE(1), 0x01,                       // USAGE (Consumer Control)
-    COLLECTION(1), 0x01,                  // COLLECTION (Application)
-    REPORT_ID(1), BLE_CONSUMER_REPORT_ID, //   REPORT_ID (1)
-    LOGICAL_MINIMUM(1), 0x00,             //   LOGICAL_MINIMUM (0)
-    LOGICAL_MAXIMUM(1), 0x01,             //   LOGICAL_MAXIMUM (1)
-    REPORT_SIZE(1), 0x01,                 //   REPORT_SIZE (1)
-    REPORT_COUNT(1), 0x0B,                //   REPORT_COUNT (11)
-    USAGE(1), 0x30,                       //   Power
-    USAGE(1), 0x41,                       //   Menu Pick (Select)
-    USAGE(1), 0x46,                       //   Menu Escape (Back)
-    USAGE(2), 0x23, 0x02,                 //   Home
-    USAGE(1), 0xE9,                       //   Volume Increase
-    USAGE(1), 0xEA,                       //   Volume Decrease
-    USAGE(1), 0xE2,                       //   Volume Mute
-    USAGE(1), 0x42,                       //   Menu Up
-    USAGE(1), 0x43,                       //   Menu Down
-    USAGE(1), 0x44,                       //   Menu Left
-    USAGE(1), 0x45,                       //   Menu Right
-    HIDINPUT(1), 0x02,                    //   INPUT (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-    REPORT_SIZE(1), 0x05,                 //   REPORT_SIZE (5) - Padding 5 bit
-    REPORT_COUNT(1), 0x01,                //   REPORT_COUNT (1)
-    HIDINPUT(1), 0x03,                    //   INPUT
-    END_COLLECTION(0)                     // END COLLECTION
-};
+static const uint8_t _hidReportDescriptor[]
+    = {
+          USAGE_PAGE(1), 0x0C,                  // USAGE_PAGE (Consumer)
+          USAGE(1), 0x01,                       // USAGE (Consumer Control)
+          COLLECTION(1), 0x01,                  // COLLECTION (Application)
+          REPORT_ID(1), BLE_CONSUMER_REPORT_ID, //   REPORT_ID (1)
+          LOGICAL_MINIMUM(1), 0x00,             //   LOGICAL_MINIMUM (0)
+          LOGICAL_MAXIMUM(1), 0x01,             //   LOGICAL_MAXIMUM (1)
+          REPORT_SIZE(1), 0x01,                 //   REPORT_SIZE (1)
+          REPORT_COUNT(1), 0x0B,                //   REPORT_COUNT (11)
+          USAGE(1), 0x30,                       //   Power
+          USAGE(1), 0x41,                       //   Menu Pick (Select)
+          USAGE(1), 0x46,                       //   Menu Escape (Back)
+          USAGE(2), 0x23, 0x02,                 //   Home
+          USAGE(1), 0xE9,                       //   Volume Increase
+          USAGE(1), 0xEA,                       //   Volume Decrease
+          USAGE(1), 0xE2,                       //   Volume Mute
+          USAGE(1), 0x42,                       //   Menu Up
+          USAGE(1), 0x43,                       //   Menu Down
+          USAGE(1), 0x44,                       //   Menu Left
+          USAGE(1), 0x45,                       //   Menu Right
+          HIDINPUT(1), 0x02,                    //   INPUT (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
+          REPORT_SIZE(1), 0x05,                 //   REPORT_SIZE (5) - Padding 5 bit
+          REPORT_COUNT(1), 0x01,                //   REPORT_COUNT (1)
+          HIDINPUT(1), 0x03,                    //   INPUT
+          END_COLLECTION(0)                     // END COLLECTION
+      };
 
 BLERemote::BLERemote(void) { }
 
@@ -123,7 +125,7 @@ void BLERemote::taskServer(void* pvParameter) {
     BLERemoteInstance->inputConsumer                   = BLERemoteInstance->hid->inputReport(BLE_CONSUMER_REPORT_ID);
     BLERemoteInstance->connectionStatus->inputConsumer = BLERemoteInstance->inputConsumer;
     BLERemoteInstance->hid->manufacturer()->setValue(BLERemoteInstance->deviceManufacturer);
-    BLERemoteInstance->hid->pnp(0x02, BLE_VEND_ID, BLE_PROD_ID, BLE_PROD_VER);
+    BLERemoteInstance->hid->pnp(BLE_VEND_SRC, BLE_VEND_ID, BLE_PROD_ID, BLE_PROD_VER);
     BLERemoteInstance->hid->hidInfo(0x00, 0x01);
 
     NimBLEDevice::setSecurityAuth(true, false, false);
