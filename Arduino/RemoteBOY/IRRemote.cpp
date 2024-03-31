@@ -19,7 +19,7 @@ void IRRemote::setup(void) {
 void IRRemote::send(uint8_t irCode) {
     uint32_t currentTime = millis();
     if (currentTime - this->lastSend > IR_DELAY) {
-        this->lastSend += IR_DELAY;
         this->irSender->sendNEC(irCode);
+        this->lastSend = millis();
     }
 }
