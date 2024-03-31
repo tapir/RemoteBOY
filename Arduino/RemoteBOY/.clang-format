@@ -6,6 +6,7 @@ AlignTrailingComments: 'true'
 AllowAllArgumentsOnNextLine: 'true'
 AllowShortBlocksOnASingleLine: 'true'
 BreakBeforeBraces: Custom
-TabWidth: '4'
-UseTab: Always
-ColumnLimit: 0
+IndentCaseLabels: 'false'
+IndentWidth: '4'
+TabWidth: '2'
+UseTab: Never

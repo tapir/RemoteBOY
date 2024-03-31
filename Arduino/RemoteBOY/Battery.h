@@ -5,16 +5,16 @@
 
 class Battery {
 public:
-	Battery(void);
-	void	setup(void);
-	void	loop(void);
-	uint8_t getLevel(void);
-	float	getVoltage(void);
+    Battery(void);
+    void    setup(void);
+    void    loop(void);
+    uint8_t getLevel(void);
+    float   getVoltage(void);
 
 private:
-	float	 voltage;
-	uint8_t	 level;
-	uint32_t lastUpdate;
+    float    voltage;
+    uint8_t  level;
+    uint32_t lastUpdate;
 };
 
 #endif // BATTERY_H
