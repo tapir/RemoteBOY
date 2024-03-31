@@ -35,7 +35,7 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
 Battery battery;
 
 // led state
-LED leds;
+LEDs leds;
 
 // key matrix state
 KeyMatrix matrix;
@@ -222,13 +222,31 @@ void setup() {
 void loop() {
     // TODO: power management sleep and wake-up point
 
+    // wait until bluetooth is connected
+    bool pairingIndicator = leds.getPairing();
+    if (!blRemote.isConnected()) {
+        // pairing LED indicator turns on and blink all LEDs indefinitely
+        // either until there is a connection or the esp32 goes to sleep
+        if (!pairingIndicator) {
+            leds.setPairing(true);
+        }
+        return;
+    }
+    if (pairingIndicator) {
+        leds.setPairing(false);
+    }
+
     // update battery level
     battery.loop();
     blRemote.setBatteryLevel(battery.getLevel());
-    // low battery indicator
-    if (battery.getLevel() <= 10) {
-        leds.setBlinkFlag(LED1, true);
-        leds.setBlinkFlag(LED2, true);
+
+    // low battery LED indicator only sets the "blink" flag for all LEDs
+    // but doesn't turn them on for power saving
+    bool blinkIndicator = leds.getBlinkFlag();
+    if (battery.getLevel() <= 10 && !blinkIndicator) {
+        leds.setBlinkFlag(true);
+    } else if (blinkIndicator) {
+        leds.setBlinkFlag(false);
     }
 
     // scan key matrix
@@ -239,6 +257,6 @@ void loop() {
         buttons[i].loop();
     }
 
-    // led process
+    // process LEDs
     leds.loop();
 }

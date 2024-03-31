@@ -3,10 +3,10 @@ AlignConsecutiveMacros: 'true'
 AlignConsecutiveAssignments: 'true'
 AlignConsecutiveDeclarations: 'true'
 AlignTrailingComments: 'true'
-AllowAllArgumentsOnNextLine: 'true'
 AllowShortBlocksOnASingleLine: 'true'
 BreakBeforeBraces: Custom
 IndentCaseLabels: 'false'
 IndentWidth: '4'
 TabWidth: '2'
 UseTab: Never
+AllowAllArgumentsOnNextLine: 'true'

@@ -8,9 +8,9 @@ static const uint8_t  PIN_LED_2           = D3;
 static const uint8_t  PIN_LED_1           = D4;
 static const uint8_t  ledPins[NUM_LEDS]   = { PIN_LED_2, PIN_LED_1 };
 
-LED::LED(void) { }
+LEDs::LEDs(void) { }
 
-void LED::setup(void) {
+void LEDs::setup(void) {
     for (int i = 0; i < NUM_LEDS; i++) {
         pinMode(ledPins[i], OUTPUT);
         digitalWrite(ledPins[i], LOW);
@@ -22,7 +22,7 @@ void LED::setup(void) {
     }
 }
 
-void LED::loop(void) {
+void LEDs::loop(void) {
     for (int i = 0; i < NUM_LEDS; i++) {
         uint32_t currentTime = millis();
         if (this->state[i].state) {
@@ -39,18 +39,47 @@ void LED::loop(void) {
     }
 }
 
-void LED::turnOn(int ledNum) {
+void LEDs::turnOn(uint8_t ledNum) {
     digitalWrite(ledPins[ledNum], HIGH);
     this->state[ledNum].state           = true;
     this->state[ledNum].lastUpdateTotal = millis();
 }
 
-void LED::turnOff(int ledNum) {
+void LEDs::turnOff(uint8_t ledNum) {
     digitalWrite(ledPins[ledNum], LOW);
     this->state[ledNum].state = false;
 }
 
-void LED::setBlinkFlag(int ledNum, bool blink) {
-    this->state[ledNum].blink           = blink;
-    this->state[ledNum].lastUpdateBlink = millis();
+void LEDs::setBlinkFlag(bool blink) {
+    for (int i = 0; i < NUM_LEDS; i++) {
+        this->state[i].blink           = blink;
+        this->state[i].lastUpdateBlink = millis();
+    }
+}
+
+bool LEDs::getBlinkFlag(void) {
+    bool indicator = true;
+    for (int i = 0; i < NUM_LEDS; i++) {
+        indicator &= this->state[i].blink;
+    }
+    return indicator;
+}
+
+bool LEDs::getPairing(void) {
+    bool indicator = true;
+    for (int i = 0; i < NUM_LEDS; i++) {
+        indicator &= this->state[i].endless;
+        indicator &= this->state[i].blink;
+        indicator &= this->state[i].state;
+    }
+    return indicator;
+}
+
+void LEDs::setPairing(bool pairing) {
+    for (int i = 0; i < NUM_LEDS; i++) {
+        this->state[i].endless = pairing;
+        this->state[i].blink   = pairing;
+        this->state[i].state   = pairing;
+        digitalWrite(ledPins[i], pairing);
+    }
 }

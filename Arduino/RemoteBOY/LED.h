@@ -14,14 +14,17 @@ typedef struct LEDState {
     bool     endless; // LEDs never turn off on their own
 };
 
-class LED {
+class LEDs {
 public:
-    LED(void);
+    LEDs(void);
     void setup(void);
     void loop(void);
-    void turnOn(int ledNum);
-    void turnOff(int ledNum);
-    void setBlinkFlag(int ledNum, bool blink);
+    void turnOn(uint8_t ledNum);
+    void turnOff(uint8_t ledNum);
+    void setBlinkFlag(bool blink);
+    bool getBlinkFlag(void);
+    bool getPairing(void);
+    void setPairing(bool pairing);
 
 private:
     LEDState state[2];
