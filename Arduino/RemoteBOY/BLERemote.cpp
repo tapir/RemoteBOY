@@ -10,13 +10,13 @@
 #include "BLERemote.h"
 #include "BLEStatus.h"
 
-#if defined(CONFIG_ARDUHAL_ESP_LOG)
-#include "esp32-hal-log.h"
-#define LOG_TAG ""
-#else
-#include "esp_log.h"
-static const char* LOG_TAG = "RemoteBOY";
-#endif
+// #if defined(CONFIG_ARDUHAL_ESP_LOG)
+// #include "esp32-hal-log.h"
+// #define LOG_TAG ""
+// #else
+// #include "esp_log.h"
+// static const char* LOG_TAG = "RemoteBOY";
+// #endif
 
 #define CONSUMER_REPORT_ID	  0x01
 #define HID_REMOTE_APPEARANCE 384
@@ -137,6 +137,6 @@ void BLERemote::taskServer(void* pvParameter) {
 	pAdvertising->start();
 	BLERemoteInstance->hid->setBatteryLevel(BLERemoteInstance->batteryLevel);
 
-	ESP_LOGD(LOG_TAG, "Advertising started!");
+	// ESP_LOGD(LOG_TAG, "Advertising started!");
 	vTaskDelay(portMAX_DELAY);
 }
