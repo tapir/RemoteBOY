@@ -79,14 +79,14 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         switch (buttonID) {
         case BTN_ID_POWER:
             if (state && buttons[BTN_ID_SELECT].isPressed()) {
-                blRemote.pairingMode = true;
+                blRemote.disconnect();
             } else {
                 state ? blRemote.press(BLE_REMOTE_POWER) : blRemote.release(BLE_REMOTE_POWER);
             }
             break;
         case BTN_ID_SELECT:
             if (state && buttons[BTN_ID_POWER].isPressed()) {
-                blRemote.pairingMode = true;
+                blRemote.disconnect();
             } else {
                 state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
             }
@@ -151,7 +151,7 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         case BTN_ID_POWER:
             if (state) {
                 if (buttons[BTN_ID_SELECT].isPressed()) {
-                    blRemote.pairingMode = true;
+                    blRemote.disconnect();
                 } else {
                     irRemote.press(IR_REMOTE_POWER, false);
                 }
@@ -160,7 +160,7 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         case BTN_ID_SELECT:
             if (state) {
                 if (buttons[BTN_ID_POWER].isPressed()) {
-                    blRemote.pairingMode = true;
+                    blRemote.disconnect();
                 } else {
                     irRemote.press(IR_REMOTE_SELECT, false);
                 }
