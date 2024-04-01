@@ -28,7 +28,7 @@ void IRRemote::release(void) {
 }
 
 void IRRemote::loop(void) {
-    if (millis() - this->lastRepeat >= IR_REPEAT_FREQUENCY) {
+    if (this->repeat && (millis() - this->lastRepeat >= IR_REPEAT_FREQUENCY)) {
         this->lastRepeat += IR_REPEAT_FREQUENCY;
         this->modulateRepeat();
     }
