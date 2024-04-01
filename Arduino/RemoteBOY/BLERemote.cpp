@@ -88,12 +88,6 @@ void BLERemote::release(const ButtonReport b) {
     this->sendReport();
 }
 
-// void BLERemote::click(const ButtonReport b) {
-//     this->press(b);
-//     delay(80);
-//     this->release(b);
-// }
-
 void BLERemote::sendReport(void) {
     if (this->isConnected()) {
         this->inputConsumer->setValue((uint8_t*)this->_consumerButtons, sizeof(ButtonReport));
@@ -120,7 +114,8 @@ void BLERemote::taskServer(void* pvParameter) {
 
     NimBLEServer* pServer = NimBLEDevice::createServer();
     pServer->setCallbacks(BLERemoteInstance->connectionStatus);
-
+    pServer->advertiseOnDisconnect(true);
+    BLERemoteInstance->bleServer                       = pServer;
     BLERemoteInstance->hid                             = new NimBLEHIDDevice(pServer);
     BLERemoteInstance->inputConsumer                   = BLERemoteInstance->hid->inputReport(BLE_CONSUMER_REPORT_ID);
     BLERemoteInstance->connectionStatus->inputConsumer = BLERemoteInstance->inputConsumer;
@@ -142,4 +137,12 @@ void BLERemote::taskServer(void* pvParameter) {
 
     // ESP_LOGD(LOG_TAG, "Advertising started!");
     vTaskDelay(portMAX_DELAY);
+}
+
+void BLERemote::disconnect(void) {
+    size_t peersNum = this->bleServer->getConnectedCount();
+    for (size_t i = 0; i < peersNum; i++) {
+        uint16_t connID = this->bleServer->getPeerInfo(i).getConnHandle();
+        this->bleServer->disconnect(connID);
+    }
 }
