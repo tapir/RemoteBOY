@@ -3,8 +3,9 @@
 
 #include <stdint.h>
 
-static const uint8_t LED1 = 0;
-static const uint8_t LED2 = 1;
+static const size_t  NUM_LEDS = 2;
+static const uint8_t LED1     = 0;
+static const uint8_t LED2     = 1;
 
 typedef struct {
     uint32_t lastUpdateTotal;
@@ -27,7 +28,7 @@ public:
     void setPairing(bool pairing);
 
 private:
-    LEDState state[2];
+    LEDState state[NUM_LEDS];
 };
 
 #endif // LED_H

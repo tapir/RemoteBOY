@@ -1,7 +1,6 @@
 #include "LED.h"
 #include <Arduino.h>
 
-static const size_t   NUM_LEDS            = 2;
 static const uint32_t LED_TOTAL_ON_TIME   = 5000; // stay on for 5 seconds
 static const uint32_t LED_BLINK_FREQUENCY = 500;  // blink every 0.5 seconds
 static const uint8_t  PIN_LED_2           = D3;
