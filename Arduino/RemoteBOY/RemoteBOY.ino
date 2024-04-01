@@ -105,21 +105,17 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
             }
             break;
         case BTN_ID_VOLUP:
-            if (state) {
-                if (buttons[BTN_ID_VOLDOWN].isPressed()) {
-                    irRemote.send(IR_REMOTE_VOLMUTE);
-                } else {
-                    irRemote.send(IR_REMOTE_VOLUP);
-                }
+            if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
+                irRemote.press(IR_REMOTE_VOLMUTE, false);
+            } else {
+                state ? irRemote.press(IR_REMOTE_VOLUP, true) : irRemote.release();
             }
             break;
         case BTN_ID_VOLDOWN:
-            if (state) {
-                if (buttons[BTN_ID_VOLUP].isPressed()) {
-                    irRemote.send(IR_REMOTE_VOLMUTE);
-                } else {
-                    irRemote.send(IR_REMOTE_VOLDOWN);
-                }
+            if (state && buttons[BTN_ID_VOLUP].isPressed()) {
+                irRemote.press(IR_REMOTE_VOLMUTE, false);
+            } else {
+                state ? irRemote.press(IR_REMOTE_VOLDOWN, true) : irRemote.release();
             }
             break;
         case BTN_ID_UP:
@@ -150,65 +146,72 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         leds.turnOff(LED1);
         leds.turnOn(LED2);
 
-        // for IR we're only interested in "press" action
-        if (!state) {
-            return;
-        }
-
         switch (buttonID) {
         case BTN_ID_POWER:
-            if (buttons[BTN_ID_SELECT].isPressed()) {
-                blRemote.pairingMode = true;
-            } else {
-                irRemote.send(IR_REMOTE_POWER);
+            if (state) {
+                if (buttons[BTN_ID_SELECT].isPressed()) {
+                    blRemote.pairingMode = true;
+                } else {
+                    irRemote.press(IR_REMOTE_POWER, false);
+                }
             }
             break;
         case BTN_ID_SELECT:
-            if (buttons[BTN_ID_POWER].isPressed()) {
-                blRemote.pairingMode = true;
-            } else {
-                irRemote.send(IR_REMOTE_SELECT);
+            if (state) {
+                if (buttons[BTN_ID_POWER].isPressed()) {
+                    blRemote.pairingMode = true;
+                } else {
+                    irRemote.press(IR_REMOTE_SELECT, false);
+                }
             }
             break;
         case BTN_ID_BACK:
-            if (buttons[BTN_ID_HOME].isPressed()) {
-                layer = !layer;
-            } else {
-                irRemote.send(IR_REMOTE_BACK);
+            if (state) {
+                if (buttons[BTN_ID_HOME].isPressed()) {
+                    layer = !layer;
+                } else {
+                    irRemote.press(IR_REMOTE_BACK, false);
+                }
             }
             break;
         case BTN_ID_HOME:
-            if (buttons[BTN_ID_BACK].isPressed()) {
-                layer = !layer;
-            } else {
-                irRemote.send(IR_REMOTE_HOME);
+            if (state) {
+                if (buttons[BTN_ID_BACK].isPressed()) {
+                    layer = !layer;
+                } else {
+                    irRemote.press(IR_REMOTE_HOME, false);
+                }
             }
             break;
         case BTN_ID_VOLUP:
-            if (buttons[BTN_ID_VOLDOWN].isPressed()) {
-                irRemote.send(IR_REMOTE_VOLMUTE);
-            } else {
-                irRemote.send(IR_REMOTE_SETTINGS);
+            if (state) {
+                if (buttons[BTN_ID_VOLDOWN].isPressed()) {
+                    irRemote.press(IR_REMOTE_VOLMUTE, false);
+                } else {
+                    irRemote.press(IR_REMOTE_SETTINGS, false);
+                }
             }
             break;
         case BTN_ID_VOLDOWN:
-            if (buttons[BTN_ID_VOLUP].isPressed()) {
-                irRemote.send(IR_REMOTE_VOLMUTE);
-            } else {
-                irRemote.send(IR_REMOTE_INPUT);
+            if (state) {
+                if (buttons[BTN_ID_VOLUP].isPressed()) {
+                    irRemote.press(IR_REMOTE_VOLMUTE, false);
+                } else {
+                    irRemote.press(IR_REMOTE_INPUT, false);
+                }
             }
             break;
         case BTN_ID_UP:
-            irRemote.send(IR_REMOTE_UP);
+            state ? irRemote.press(IR_REMOTE_UP, true) : irRemote.release();
             break;
         case BTN_ID_LEFT:
-            irRemote.send(IR_REMOTE_LEFT);
+            state ? irRemote.press(IR_REMOTE_LEFT, true) : irRemote.release();
             break;
         case BTN_ID_RIGHT:
-            irRemote.send(IR_REMOTE_RIGHT);
+            state ? irRemote.press(IR_REMOTE_RIGHT, true) : irRemote.release();
             break;
         case BTN_ID_DOWN:
-            irRemote.send(IR_REMOTE_DOWN);
+            state ? irRemote.press(IR_REMOTE_DOWN, true) : irRemote.release();
             break;
         }
     }

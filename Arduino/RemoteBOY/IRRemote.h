@@ -1,33 +1,43 @@
 #ifndef IRREMOTE_H
 #define IRREMOTE_H
 
-#include <IRremoteESP8266.h>
-#include <IRsend.h>
+#include <stdint.h>
 
-const uint8_t IR_REMOTE_POWER    = 0x04FB08F7;
-const uint8_t IR_REMOTE_SELECT   = 0x04FB44BB;
-const uint8_t IR_REMOTE_BACK     = 0x04FB28D7;
-const uint8_t IR_REMOTE_HOME     = 0x04FB7C83;
-const uint8_t IR_REMOTE_INPUT    = 0x04FB0BF4;
-const uint8_t IR_REMOTE_SETTINGS = 0x04FB43BC;
-const uint8_t IR_REMOTE_VOLUP    = 0x04FB02FD;
-const uint8_t IR_REMOTE_VOLDOWN  = 0x04FB03FC;
-const uint8_t IR_REMOTE_VOLMUTE  = 0x04FB09F6;
-const uint8_t IR_REMOTE_UP       = 0x04FB40BF;
-const uint8_t IR_REMOTE_DOWN     = 0x04FB41BE;
-const uint8_t IR_REMOTE_LEFT     = 0x04FB07FB;
-const uint8_t IR_REMOTE_RIGHT    = 0x04FB06F9;
+const uint16_t IR_REMOTE_POWER    = 0x0408;
+const uint16_t IR_REMOTE_SELECT   = 0x0444;
+const uint16_t IR_REMOTE_BACK     = 0x0428;
+const uint16_t IR_REMOTE_HOME     = 0x047C;
+const uint16_t IR_REMOTE_INPUT    = 0x040B;
+const uint16_t IR_REMOTE_SETTINGS = 0x0443;
+const uint16_t IR_REMOTE_VOLUP    = 0x0402;
+const uint16_t IR_REMOTE_VOLDOWN  = 0x0403;
+const uint16_t IR_REMOTE_VOLMUTE  = 0x0409;
+const uint16_t IR_REMOTE_UP       = 0x0440;
+const uint16_t IR_REMOTE_DOWN     = 0x0441;
+const uint16_t IR_REMOTE_LEFT     = 0x0407;
+const uint16_t IR_REMOTE_RIGHT    = 0x0406;
+const uint16_t IR_REMOTE_NONE     = 0;
 
 class IRRemote {
 public:
     IRRemote(void);
-    ~IRRemote(void);
     void setup(void);
-    void send(uint8_t irCode);
+    void press(uint16_t irCode, bool repeat);
+    void release(void);
+    void loop(void);
 
 private:
-    IRsend*  irSender;
-    uint32_t lastSend;
+    uint16_t irCode;
+    uint32_t lastRepeat;
+    bool     repeat;
+    bool     getBits(uint16_t irCode, bool address, uint8_t index);
+    void     modulateOne(void);
+    void     modulateZero(void);
+    void     modulateStart(void);
+    void     modulateEnd(void);
+    void     modulateRepeat(void);
+    void     modulateAddress(uint16_t irCode);
+    void     modulateData(uint16_t irCode);
 };
 
 #endif // IRREMOTE_H
