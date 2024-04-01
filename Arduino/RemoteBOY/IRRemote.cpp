@@ -16,7 +16,7 @@ void IRRemote::setup(void) {
     this->lastSend = 0;
 }
 
-void IRRemote::send(uint8_t irCode) {
+void IRRemote::send(uint32_t irCode) {
     if (millis() - this->lastSend > IR_DELAY) {
         this->irSender->sendNEC(irCode);
         this->lastSend = millis();
