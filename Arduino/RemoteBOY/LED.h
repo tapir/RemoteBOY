@@ -6,13 +6,13 @@
 static const uint8_t LED1 = 0;
 static const uint8_t LED2 = 1;
 
-typedef struct LEDState {
+typedef struct {
     uint32_t lastUpdateTotal;
     uint32_t lastUpdateBlink;
     bool     state;
     bool     blink;
     bool     endless; // LEDs never turn off on their own
-};
+} LEDState;
 
 class LEDs {
 public:
