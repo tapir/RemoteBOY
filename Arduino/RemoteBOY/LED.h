@@ -1,6 +1,7 @@
 #ifndef LED_H
 #define LED_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 static const size_t  NUM_LEDS = 2;
