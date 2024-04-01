@@ -10,7 +10,6 @@ void IRRemote::setup(void) {
     pinMode(PIN_LED_IR, OUTPUT);
     digitalWrite(PIN_LED_IR, LOW);
     this->lastRepeat = 0;
-    this->irCode     = IR_REMOTE_NONE;
     this->repeat     = false;
 }
 

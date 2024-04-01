@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+// address + data
 const uint16_t IR_REMOTE_POWER    = 0x0408;
 const uint16_t IR_REMOTE_SELECT   = 0x0444;
 const uint16_t IR_REMOTE_BACK     = 0x0428;
@@ -16,7 +17,6 @@ const uint16_t IR_REMOTE_UP       = 0x0440;
 const uint16_t IR_REMOTE_DOWN     = 0x0441;
 const uint16_t IR_REMOTE_LEFT     = 0x0407;
 const uint16_t IR_REMOTE_RIGHT    = 0x0406;
-const uint16_t IR_REMOTE_NONE     = 0;
 
 class IRRemote {
 public:
@@ -27,7 +27,6 @@ public:
     void loop(void);
 
 private:
-    uint16_t irCode;
     uint32_t lastRepeat;
     bool     repeat;
     bool     getBits(uint16_t irCode, bool address, uint8_t index);
