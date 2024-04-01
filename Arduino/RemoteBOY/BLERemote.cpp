@@ -132,7 +132,7 @@ void BLERemote::taskServer(void* pvParameter) {
 
 void BLERemote::disconnect(void) {
     size_t peersNum = this->bleServer->getConnectedCount();
-    for (size_t i = 0; i < peersNum; i++) {
+    for (int i = 0; i < peersNum; i++) {
         uint16_t connID = this->bleServer->getPeerInfo(i).getConnHandle();
         this->bleServer->disconnect(connID);
     }

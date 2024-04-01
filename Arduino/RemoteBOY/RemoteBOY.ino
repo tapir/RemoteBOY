@@ -31,23 +31,12 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
     { 2, 0 }, { 3, 0 }, { 3, 1 }, { 4, 0 }, { 4, 1 }
 };
 
-// battery state
-Battery battery;
-
-// led state
-LEDs leds;
-
-// key matrix state
-KeyMatrix matrix;
-
-// button states
-Button buttons[NUM_BUTTONS];
-
-// bluetooth sender
-BLERemote blRemote;
-
-// infrared sender
-IRRemote irRemote;
+Battery   battery;              // battery state
+LEDs      leds;                 // led state
+KeyMatrix matrix;               // key matrix state
+Button    buttons[NUM_BUTTONS]; // button states
+BLERemote blRemote;             // bluetooth sender
+IRRemote  irRemote;             // infrared sender
 
 void setup() {
     battery.setup();
@@ -66,12 +55,13 @@ void loop() {
     // wait until bluetooth is connected
     bool pairingIndicator = leds.getPairing();
     if (!blRemote.isConnected()) {
-        // pairing/BLE disconnected indicator
+        // bluetooth advertising indicator
         if (!pairingIndicator) {
             leds.setPairing(true);
         }
         return;
     }
+    // bluetooth connected
     if (pairingIndicator) {
         leds.setPairing(false);
     }
