@@ -269,4 +269,7 @@ void loop() {
 
     // process LEDs
     leds.loop();
+
+    // process IR repeats
+    irRemote.loop();
 }
