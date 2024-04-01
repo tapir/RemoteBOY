@@ -13,6 +13,7 @@ void IRRemote::setup(void) {
     this->repeat     = false;
 }
 
+// https://techdocs.altium.com/display/FPGA/NEC+Infrared+Transmission+Protocol
 void IRRemote::press(uint16_t irCode, bool repeat) {
     this->lastRepeat = millis();
     this->modulateStart();
