@@ -31,6 +31,7 @@ void LEDs::loop(void) {
             }
             // check if it's time to toggle for blink
             if (this->state[i].blink && (currentTime - this->state[i].lastUpdateBlink > LED_BLINK_FREQUENCY)) {
+                // even though the pin is not set for reading, according to internets it should work
                 digitalWrite(ledPins[i], !digitalRead(ledPins[i]));
                 this->state[i].lastUpdateBlink += LED_BLINK_FREQUENCY;
             }
@@ -49,6 +50,7 @@ void LEDs::turnOff(uint8_t ledNum) {
     this->state[ledNum].state = false;
 }
 
+// sets all LEDs blinking
 void LEDs::setBlinkFlag(bool blink) {
     for (int i = 0; i < NUM_LEDS; i++) {
         this->state[i].blink           = blink;
@@ -64,6 +66,17 @@ bool LEDs::getBlinkFlag(void) {
     return indicator;
 }
 
+// set all flags necessary to indicate for bluetooth pairing
+// both LEDs will blink at the same time endlessly
+void LEDs::setPairing(bool pairing) {
+    for (int i = 0; i < NUM_LEDS; i++) {
+        this->state[i].endless = pairing;
+        this->state[i].blink   = pairing;
+        this->state[i].state   = pairing;
+        digitalWrite(ledPins[i], pairing);
+    }
+}
+
 bool LEDs::getPairing(void) {
     bool indicator = true;
     for (int i = 0; i < NUM_LEDS; i++) {
@@ -72,13 +85,4 @@ bool LEDs::getPairing(void) {
         indicator &= this->state[i].state;
     }
     return indicator;
-}
-
-void LEDs::setPairing(bool pairing) {
-    for (int i = 0; i < NUM_LEDS; i++) {
-        this->state[i].endless = pairing;
-        this->state[i].blink   = pairing;
-        this->state[i].state   = pairing;
-        digitalWrite(ledPins[i], pairing);
-    }
 }

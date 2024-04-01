@@ -49,6 +49,60 @@ BLERemote blRemote;
 // infrared sender
 IRRemote irRemote;
 
+void setup() {
+    battery.setup();
+    leds.setup();
+    blRemote.setup("RemoteBOY", "Lola Engineering", battery.getLevel());
+    irRemote.setup();
+    matrix.setup();
+    for (int i = 0; i < NUM_BUTTONS; i++) {
+        buttons[i].setup(i, 0, &onButtonStateChange, &onReadPin);
+    }
+}
+
+void loop() {
+    // TODO: power management sleep and wake-up point
+
+    // wait until bluetooth is connected
+    bool pairingIndicator = leds.getPairing();
+    if (!blRemote.isConnected()) {
+        // pairing/BLE disconnected indicator
+        if (!pairingIndicator) {
+            leds.setPairing(true);
+        }
+        return;
+    }
+    if (pairingIndicator) {
+        leds.setPairing(false);
+    }
+
+    // update battery level
+    battery.loop();
+    blRemote.setBatteryLevel(battery.getLevel());
+
+    // low battery indicator
+    bool blinkIndicator = leds.getBlinkFlag();
+    if (battery.getLevel() <= 10 && !blinkIndicator) {
+        leds.setBlinkFlag(true);
+    } else if (blinkIndicator) {
+        leds.setBlinkFlag(false);
+    }
+
+    // scan key matrix
+    matrix.loop();
+
+    // process each button
+    for (int i = 0; i < NUM_BUTTONS; i++) {
+        buttons[i].loop();
+    }
+
+    // process LEDs
+    leds.loop();
+
+    // process IR repeats
+    irRemote.loop();
+}
+
 // this func is called by each button to read the pin state instead of
 // digitalRead() because we operate with a key matrix and not "a pin per
 // button". key matrix object will keep all states up to date as long as
@@ -216,60 +270,4 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
             break;
         }
     }
-}
-
-void setup() {
-    battery.setup();
-    leds.setup();
-    blRemote.setup("RemoteBOY", "Lola Engineering", battery.getLevel());
-    irRemote.setup();
-    matrix.setup();
-    for (int i = 0; i < NUM_BUTTONS; i++) {
-        buttons[i].setup(i, 0, &onButtonStateChange, &onReadPin);
-    }
-}
-
-void loop() {
-    // TODO: power management sleep and wake-up point
-
-    // wait until bluetooth is connected
-    bool pairingIndicator = leds.getPairing();
-    if (!blRemote.isConnected()) {
-        // pairing LED indicator turns on and blink all LEDs indefinitely
-        // either until there is a connection or the esp32 goes to sleep
-        if (!pairingIndicator) {
-            leds.setPairing(true);
-        }
-        return;
-    }
-    if (pairingIndicator) {
-        leds.setPairing(false);
-    }
-
-    // update battery level
-    battery.loop();
-    blRemote.setBatteryLevel(battery.getLevel());
-
-    // low battery LED indicator only sets the "blink" flag for all LEDs
-    // but doesn't turn them on for power saving
-    bool blinkIndicator = leds.getBlinkFlag();
-    if (battery.getLevel() <= 10 && !blinkIndicator) {
-        leds.setBlinkFlag(true);
-    } else if (blinkIndicator) {
-        leds.setBlinkFlag(false);
-    }
-
-    // scan key matrix
-    matrix.loop();
-
-    // process each button
-    for (int i = 0; i < NUM_BUTTONS; i++) {
-        buttons[i].loop();
-    }
-
-    // process LEDs
-    leds.loop();
-
-    // process IR repeats
-    irRemote.loop();
 }

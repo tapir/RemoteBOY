@@ -23,10 +23,14 @@ void IRRemote::press(uint16_t irCode, bool repeat) {
     this->modulateEnd();
 }
 
+// release is only necessary when a command is repeating
 void IRRemote::release(void) {
     this->repeat = false;
 }
 
+// checkes for repeat timer and sends a repeat command. repeat command for NEC/LG protocol
+// is independent of the command that is getting repeated hence it all commmands can be
+// repeated with the same modulation
 void IRRemote::loop(void) {
     if (this->repeat && (millis() - this->lastRepeat >= IR_REPEAT_FREQUENCY)) {
         this->lastRepeat += IR_REPEAT_FREQUENCY;
@@ -34,7 +38,7 @@ void IRRemote::loop(void) {
     }
 }
 
-// gets bits of a byte from LSB (index = 0) to MSB (index = 7)
+// gets bit of a byte from LSB (index = 0) to MSB (index = 7)
 bool IRRemote::getBits(uint16_t irCode, bool address, uint8_t index) {
     uint8_t c = irCode & 0xFF;
     if (address) {
