@@ -16,11 +16,11 @@ void IRRemote::setup(void) {
 // https://techdocs.altium.com/display/FPGA/NEC+Infrared+Transmission+Protocol
 void IRRemote::press(uint16_t irCode, bool repeat) {
     this->lastRepeat = millis();
+    this->repeat     = repeat;
     this->modulateStart();
     this->modulateAddress(irCode);
     this->modulateData(irCode);
     this->modulateEnd();
-    this->repeat = repeat;
 }
 
 void IRRemote::release(void) {
