@@ -64,13 +64,14 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
     static bool layer = false; // default layer
     if (!layer) {
         // default layer
-        // power    BT
-        // select   BT
-        // d-pad    BT
-        // back     BT
-        // home     BT
-        // volume   IR
-        // mute     IR
+        // power        BT
+        // select       BT
+        // d-pad        BT
+        // back         BT
+        // home         BT
+        // volume up    IR
+        // volume down  IR
+        // mute         IR
 
         leds.turnOff(LED2);
         leds.turnOn(LED1);
