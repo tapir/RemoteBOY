@@ -28,6 +28,7 @@ void LEDs::loop(void) {
             // check if it's time to turn LED off
             if (!this->state[i].endless && (currentTime - this->state[i].lastUpdateTotal > LED_TOTAL_ON_TIME)) {
                 this->turnOff(i);
+                break;
             }
             // check if it's time to toggle for blink
             if (this->state[i].blink && (currentTime - this->state[i].lastUpdateBlink > LED_BLINK_FREQUENCY)) {
@@ -40,21 +41,27 @@ void LEDs::loop(void) {
 }
 
 void LEDs::turnOn(uint8_t ledNum) {
-    digitalWrite(ledPins[ledNum], HIGH);
-    this->state[ledNum].state           = true;
-    this->state[ledNum].lastUpdateTotal = millis();
+    if (!this->state[ledNum].state) {
+        digitalWrite(ledPins[ledNum], HIGH);
+        this->state[ledNum].state           = true;
+        this->state[ledNum].lastUpdateTotal = millis();
+    }
 }
 
 void LEDs::turnOff(uint8_t ledNum) {
-    digitalWrite(ledPins[ledNum], LOW);
-    this->state[ledNum].state = false;
+    if (this->state[ledNum].state) {
+        digitalWrite(ledPins[ledNum], LOW);
+        this->state[ledNum].state = false;
+    }
 }
 
 // sets all LEDs blinking
 void LEDs::setBlinkFlag(bool blink) {
     for (int i = 0; i < NUM_LEDS; i++) {
-        this->state[i].blink           = blink;
-        this->state[i].lastUpdateBlink = millis();
+        if (!this->state[i].blink) {
+            this->state[i].blink           = blink;
+            this->state[i].lastUpdateBlink = millis();
+        }
     }
 }
 
