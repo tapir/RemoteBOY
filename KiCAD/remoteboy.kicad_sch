@@ -1767,6 +1767,16 @@
 	)
 	(wire
 		(pts
+			(xy 134.62 97.79) (xy 162.56 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2b8e8dcc-2990-4fea-99d7-9771375e04d9")
+	)
+	(wire
+		(pts
 			(xy 134.62 55.88) (xy 137.16 55.88)
 		)
 		(stroke
@@ -1857,13 +1867,13 @@
 	)
 	(wire
 		(pts
-			(xy 162.56 85.09) (xy 134.62 85.09)
+			(xy 134.62 59.69) (xy 162.56 59.69)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "4b764591-29cd-4fa4-b707-1a9f43d1e3ac")
+		(uuid "4a6f19af-9da6-482e-8c03-3601fec562f2")
 	)
 	(wire
 		(pts
@@ -2067,16 +2077,6 @@
 	)
 	(wire
 		(pts
-			(xy 162.56 59.69) (xy 134.62 59.69)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "860cdbcb-441e-49ea-9e14-7c6b1407b6b8")
-	)
-	(wire
-		(pts
 			(xy 129.54 97.79) (xy 134.62 97.79)
 		)
 		(stroke
@@ -2104,6 +2104,16 @@
 			(type default)
 		)
 		(uuid "8e40bc13-7f28-4a32-bda3-a9ceed93b3fb")
+	)
+	(wire
+		(pts
+			(xy 134.62 72.39) (xy 162.56 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9468d024-5b59-4cfd-a626-ed65af6a7e2a")
 	)
 	(wire
 		(pts
@@ -2264,16 +2274,6 @@
 			(type default)
 		)
 		(uuid "b3728253-6707-4e53-8310-184d6987b0e3")
-	)
-	(wire
-		(pts
-			(xy 162.56 72.39) (xy 134.62 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b4a2d948-c590-4006-80a6-d8eb83f8138d")
 	)
 	(wire
 		(pts
@@ -2467,6 +2467,16 @@
 	)
 	(wire
 		(pts
+			(xy 134.62 46.99) (xy 162.56 46.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f1ef196f-491b-4a08-a5d2-cb8c4bc47618")
+	)
+	(wire
+		(pts
 			(xy 158.75 43.18) (xy 154.94 43.18)
 		)
 		(stroke
@@ -2474,16 +2484,6 @@
 			(type default)
 		)
 		(uuid "f2f0c14e-cd5f-4f61-ba88-1e89123c9f71")
-	)
-	(wire
-		(pts
-			(xy 162.56 46.99) (xy 134.62 46.99)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f34d3c55-a03c-49a7-bfdf-cb2641dc6bb2")
 	)
 	(wire
 		(pts
@@ -2497,13 +2497,13 @@
 	)
 	(wire
 		(pts
-			(xy 162.56 97.79) (xy 134.62 97.79)
+			(xy 134.62 85.09) (xy 162.56 85.09)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "f89f34cd-8218-4e6e-9de7-a468364e7d01")
+		(uuid "f4eaa30e-82f8-4ce6-ab93-6ac7fe0297f1")
 	)
 	(wire
 		(pts
@@ -2905,7 +2905,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 140.97 55.88 0)
+		(at 140.97 55.88 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -2930,7 +2930,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 140.97 60.325 0)
+			(at 140.97 51.435 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3197,7 +3197,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 166.37 93.98 0)
+		(at 166.37 93.98 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3222,7 +3222,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 166.37 98.425 0)
+			(at 166.37 89.535 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3847,7 +3847,7 @@
 				)
 			)
 		)
-		(property "Value" "470"
+		(property "Value" "220"
 			(at 55.88 95.25 90)
 			(effects
 				(font
@@ -3967,7 +3967,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 166.37 55.88 0)
+		(at 166.37 55.88 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3992,7 +3992,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 166.37 60.325 0)
+			(at 166.37 51.435 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4408,7 +4408,7 @@
 				)
 			)
 		)
-		(property "Value" "470"
+		(property "Value" "220"
 			(at 55.88 113.03 90)
 			(effects
 				(font
@@ -4526,7 +4526,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 166.37 43.18 0)
+		(at 166.37 43.18 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4551,7 +4551,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 166.37 47.625 0)
+			(at 166.37 38.735 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4935,7 +4935,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 166.37 68.58 0)
+		(at 166.37 68.58 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4960,7 +4960,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 166.37 73.025 0)
+			(at 166.37 64.135 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5159,7 +5159,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 140.97 81.28 0)
+		(at 140.97 81.28 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5184,7 +5184,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 140.97 85.725 0)
+			(at 140.97 76.835 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5451,7 +5451,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 140.97 43.18 0)
+		(at 140.97 43.18 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5476,7 +5476,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 140.97 47.625 0)
+			(at 140.97 38.735 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5537,7 +5537,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 140.97 93.98 0)
+		(at 140.97 93.98 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5562,7 +5562,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 140.97 98.425 0)
+			(at 140.97 89.535 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5623,7 +5623,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 166.37 81.28 0)
+		(at 166.37 81.28 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5648,7 +5648,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 166.37 85.725 0)
+			(at 166.37 76.835 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5709,7 +5709,7 @@
 	)
 	(symbol
 		(lib_id "Diode:1N4148W")
-		(at 140.97 68.58 0)
+		(at 140.97 68.58 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5734,7 +5734,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 140.97 73.025 0)
+			(at 140.97 64.135 0)
 			(effects
 				(font
 					(size 1.27 1.27)
