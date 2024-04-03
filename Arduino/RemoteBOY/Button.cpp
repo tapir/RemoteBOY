@@ -2,7 +2,7 @@
 
 Button::Button(void) { }
 
-void Button::setup(uint8_t buttonID, uint16_t stateMask, void (*stateChangeCallback)(uint8_t, bool), int (*readPinCallback)(uint8_t)) {
+void Button::setup(uint8_t buttonID, uint16_t stateMask, int (*stateChangeCallback)(uint8_t, bool), int (*readPinCallback)(uint8_t)) {
     this->stateChangeCallback = stateChangeCallback;
     this->readPinCallback     = readPinCallback;
     this->buttonID            = buttonID;
@@ -16,13 +16,17 @@ void Button::setup(uint8_t buttonID, uint16_t stateMask, void (*stateChangeCallb
 // the idea is that you sample the button state multiple times until the sample looks like 0xFFFF
 // depending on how stateMask looks you can get up to 16 consecutive samples or less
 // 0x0000 -> 16 samples // 0xF000 -> 12 samples // 0xFF00 ->  8 samples
-void Button::loop(void) {
+int Button::loop(void) {
     bool reading  = this->readPinCallback(this->buttonID);
     this->samples = (this->samples << 1) | (this->state ^ reading) | this->stateMask;
     if (this->samples == 0xFFFF) {
         this->state = reading;
-        this->stateChangeCallback(this->buttonID, reading);
+        int r       = this->stateChangeCallback(this->buttonID, reading);
+        if (r < BTN_EXIT_SUCCESS) {
+            return r;
+        }
     }
+    return BTN_EXIT_SUCCESS;
 }
 
 bool Button::isPressed(void) {

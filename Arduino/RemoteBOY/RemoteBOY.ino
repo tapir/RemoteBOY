@@ -37,6 +37,7 @@ KeyMatrix matrix;               // key matrix state
 Button    buttons[NUM_BUTTONS]; // button states
 BLERemote blRemote;             // bluetooth sender
 IRRemote  irRemote;             // infrared sender
+bool      forceBLEDisconnect = false;
 
 void setup() {
     battery.setup();
@@ -83,7 +84,14 @@ void loop() {
 
     // process each button
     for (int i = 0; i < NUM_BUTTONS; i++) {
-        buttons[i].loop();
+        if (buttons[i].loop() < BTN_EXIT_SUCCESS) {
+            break;
+        }
+    }
+
+    // disconnect bluetooth if necessary
+    if (forceBLEDisconnect) {
+        blRemote.disconnect();
     }
 
     // process LEDs
@@ -104,7 +112,7 @@ int onReadPin(uint8_t buttonID) {
 // this is where button event and button layer related logic happens
 // it's called by each button whenever there is a state change (press & release)
 // is detected (debounced on both press and release).
-void onButtonStateChange(uint8_t buttonID, bool state) {
+int onButtonStateChange(uint8_t buttonID, bool state) {
     static bool layer = false; // default layer
     if (!layer) {
         // default layer
@@ -124,20 +132,16 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         switch (buttonID) {
         case BTN_ID_POWER:
             if (state && buttons[BTN_ID_SELECT].isPressed()) {
-                blRemote.disconnect();
-                leds.turnOff(LED1);
-                leds.turnOff(LED2);
-                return;
+                forceBLEDisconnect = true;
+                return BTN_EXIT_BT_DISCONNECT;
             } else {
                 state ? blRemote.press(BLE_REMOTE_POWER) : blRemote.release(BLE_REMOTE_POWER);
             }
             break;
         case BTN_ID_SELECT:
             if (state && buttons[BTN_ID_POWER].isPressed()) {
-                blRemote.disconnect();
-                leds.turnOff(LED1);
-                leds.turnOff(LED2);
-                return;
+                forceBLEDisconnect = true;
+                return BTN_EXIT_BT_DISCONNECT;
             } else {
                 state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
             }
@@ -147,7 +151,7 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
                 leds.turnOff(LED1);
                 leds.turnOn(LED2);
                 layer = true;
-                return;
+                return BTN_EXIT_LAYER_CHANGE;
             } else {
                 state ? blRemote.press(BLE_REMOTE_BACK) : blRemote.release(BLE_REMOTE_BACK);
             }
@@ -157,7 +161,7 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
                 leds.turnOff(LED1);
                 leds.turnOn(LED2);
                 layer = true;
-                return;
+                return BTN_EXIT_LAYER_CHANGE;
             } else {
                 state ? blRemote.press(BLE_REMOTE_HOME) : blRemote.release(BLE_REMOTE_HOME);
             }
@@ -209,7 +213,8 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         case BTN_ID_POWER:
             if (state) {
                 if (buttons[BTN_ID_SELECT].isPressed()) {
-                    blRemote.disconnect();
+                    forceBLEDisconnect = true;
+                    return BTN_EXIT_BT_DISCONNECT;
                 } else {
                     irRemote.press(IR_REMOTE_POWER, false);
                 }
@@ -218,7 +223,8 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         case BTN_ID_SELECT:
             if (state) {
                 if (buttons[BTN_ID_POWER].isPressed()) {
-                    blRemote.disconnect();
+                    forceBLEDisconnect = true;
+                    return BTN_EXIT_BT_DISCONNECT;
                 } else {
                     irRemote.press(IR_REMOTE_SELECT, false);
                 }
@@ -230,7 +236,7 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
                     leds.turnOff(LED2);
                     leds.turnOn(LED1);
                     layer = false;
-                    return;
+                    return BTN_EXIT_LAYER_CHANGE;
                 } else {
                     irRemote.press(IR_REMOTE_BACK, false);
                 }
@@ -242,7 +248,7 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
                     leds.turnOff(LED2);
                     leds.turnOn(LED1);
                     layer = false;
-                    return;
+                    return BTN_EXIT_LAYER_CHANGE;
                 } else {
                     irRemote.press(IR_REMOTE_HOME, false);
                 }
@@ -280,4 +286,6 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
             break;
         }
     }
+
+    return BTN_EXIT_SUCCESS;
 }
