@@ -2,9 +2,9 @@
 #include <Arduino.h>
 
 static const uint8_t  PIN_BATTERY           = A0;
-static const uint32_t BATT_UPDATE_FREQUENCY = 20000; // only update every 20s
-static const float    BATT_MAX_VOLTAGE      = 3.9;   // tests show most of a NiMH battery's charge is inbetween 3.3 - 3.9V
-static const float    BATT_MIN_VOLTAGE      = 3.3;   // https://lygte-info.dk/review/batteries2012/Ikea%20Ladda%20AAA%20900mAh%20%28White%29%20UK.html
+static const uint32_t BATT_UPDATE_FREQUENCY = 1000; // only update every 20s
+static const float    BATT_MAX_VOLTAGE      = 3.9;  // tests show most of a NiMH battery's charge is inbetween 3.3 - 3.9V
+static const float    BATT_MIN_VOLTAGE      = 3.3;  // https://lygte-info.dk/review/batteries2012/Ikea%20Ladda%20AAA%20900mAh%20%28White%29%20UK.html
 
 Battery::Battery(void) { }
 
@@ -29,7 +29,7 @@ void Battery::loop(void) {
         }
 
         // we have voltage divider of 2 and 16 samples, converted from mV to V
-        float vf      = v / 8000.0;
+        float vf      = v / 8000.0 * 1.0108; // correction factor
         this->voltage = vf;
         if (vf >= BATT_MAX_VOLTAGE) {
             this->level = 100;
