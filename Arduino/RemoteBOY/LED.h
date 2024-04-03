@@ -10,10 +10,7 @@ static const uint8_t LED2     = 1;
 
 typedef struct {
     uint32_t lastUpdateTotal;
-    uint32_t lastUpdateBlink;
     bool     state;
-    bool     blink;
-    bool     endless; // LEDs never turn off on their own
 } LEDState;
 
 class LEDs {
@@ -25,10 +22,13 @@ public:
     void turnOff(uint8_t ledNum);
     void setBlinkFlag(bool blink);
     bool getBlinkFlag(void);
-    bool getPairing(void);
-    void setPairing(bool pairing);
+    void setEndlessFlag(bool endless);
+    bool getEndlessFlag(void);
 
 private:
+    uint32_t lastUpdateBlink;
+    bool     blink;
+    bool     endless; // LEDs never turn off on their own
     LEDState state[NUM_LEDS];
 };
 

@@ -53,17 +53,20 @@ void loop() {
     // TODO: power management sleep and wake-up point
 
     // wait until bluetooth is connected
-    bool pairingIndicator = leds.getPairing();
     if (!blRemote.isConnected()) {
-        // bluetooth advertising indicator
-        if (!pairingIndicator) {
-            leds.setPairing(true);
-        }
+        leds.setBlinkFlag(true);
+        leds.setEndlessFlag(true);
+        leds.turnOn(LED1);
+        leds.turnOn(LED2);
+        leds.loop();
         return;
     }
     // bluetooth connected
-    if (pairingIndicator) {
-        leds.setPairing(false);
+    if (leds.getEndlessFlag()) {
+        leds.setBlinkFlag(false);
+        leds.setEndlessFlag(false);
+        leds.turnOff(LED1);
+        leds.turnOff(LED2);
     }
 
     // update battery level
@@ -71,11 +74,8 @@ void loop() {
     blRemote.setBatteryLevel(battery.getLevel());
 
     // low battery indicator
-    bool blinkIndicator = leds.getBlinkFlag();
-    if (battery.getLevel() <= 10 && !blinkIndicator) {
+    if (battery.getLevel() <= 10) {
         leds.setBlinkFlag(true);
-    } else if (blinkIndicator) {
-        leds.setBlinkFlag(false);
     }
 
     // scan key matrix
@@ -117,13 +117,17 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         // volume down  IR
         // mute         IR
 
-        leds.turnOff(LED2);
-        leds.turnOn(LED1);
+        if (state) {
+            leds.turnOn(LED1);
+        }
 
         switch (buttonID) {
         case BTN_ID_POWER:
             if (state && buttons[BTN_ID_SELECT].isPressed()) {
                 blRemote.disconnect();
+                leds.turnOff(LED1);
+                leds.turnOff(LED2);
+                return;
             } else {
                 state ? blRemote.press(BLE_REMOTE_POWER) : blRemote.release(BLE_REMOTE_POWER);
             }
@@ -131,20 +135,29 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         case BTN_ID_SELECT:
             if (state && buttons[BTN_ID_POWER].isPressed()) {
                 blRemote.disconnect();
+                leds.turnOff(LED1);
+                leds.turnOff(LED2);
+                return;
             } else {
                 state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
             }
             break;
         case BTN_ID_BACK:
             if (state && buttons[BTN_ID_HOME].isPressed()) {
-                layer = !layer;
+                leds.turnOff(LED1);
+                leds.turnOn(LED2);
+                layer = true;
+                return;
             } else {
                 state ? blRemote.press(BLE_REMOTE_BACK) : blRemote.release(BLE_REMOTE_BACK);
             }
             break;
         case BTN_ID_HOME:
             if (state && buttons[BTN_ID_BACK].isPressed()) {
-                layer = !layer;
+                leds.turnOff(LED1);
+                leds.turnOn(LED2);
+                layer = true;
+                return;
             } else {
                 state ? blRemote.press(BLE_REMOTE_HOME) : blRemote.release(BLE_REMOTE_HOME);
             }
@@ -188,8 +201,9 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         // input (voldown)  IR
         // mute             IR
 
-        leds.turnOff(LED1);
-        leds.turnOn(LED2);
+        if (state) {
+            leds.turnOn(LED2);
+        }
 
         switch (buttonID) {
         case BTN_ID_POWER:
@@ -213,7 +227,10 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         case BTN_ID_BACK:
             if (state) {
                 if (buttons[BTN_ID_HOME].isPressed()) {
-                    layer = !layer;
+                    leds.turnOff(LED2);
+                    leds.turnOn(LED1);
+                    layer = false;
+                    return;
                 } else {
                     irRemote.press(IR_REMOTE_BACK, false);
                 }
@@ -222,7 +239,10 @@ void onButtonStateChange(uint8_t buttonID, bool state) {
         case BTN_ID_HOME:
             if (state) {
                 if (buttons[BTN_ID_BACK].isPressed()) {
-                    layer = !layer;
+                    leds.turnOff(LED2);
+                    leds.turnOn(LED1);
+                    layer = false;
+                    return;
                 } else {
                     irRemote.press(IR_REMOTE_HOME, false);
                 }
