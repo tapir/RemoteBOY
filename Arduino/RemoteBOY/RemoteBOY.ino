@@ -1,7 +1,6 @@
 #include "BLERemote.h"
 #include "Battery.h"
 #include "Button.h"
-#include "IRRemote.h"
 #include "KeyMatrix.h"
 #include "LED.h"
 
@@ -44,29 +43,38 @@ void setup() {
     blRemote.setup("RemoteBOY", "Lola Engineering", battery.getLevel());
     matrix.setup();
     for (int i = 0; i < NUM_BUTTONS; i++) {
-        buttons[i].setup(i, 0, &onButtonStateChange, &onReadPin);
+        buttons[i].setup(i, &onButtonStateChange, &onReadPin);
     }
     Serial.begin(115200);
 }
 
 void loop() {
     // TODO: power management sleep and wake-up point
+    static bool           btDisconnected = false;
+    static const uint32_t TOGGLE_DELAY   = 500;
+    static const uint32_t BLINK_DELAY    = 2000;
 
     // wait until bluetooth is connected
     if (!blRemote.isConnected()) {
-        leds.setBlinkFlag(true);
-        leds.setEndlessFlag(true);
-        leds.turnOn(LED1);
-        leds.turnOn(LED2);
-        leds.loop();
+        static uint32_t lastTime = 0;
+        if (!btDisconnected) {
+            leds.turnOn(LED1);
+            leds.turnOff(LED2);
+            btDisconnected = true;
+            lastTime       = millis();
+        }
+        if (millis() - lastTime > TOGGLE_DELAY) {
+            leds.toggle(LED1);
+            leds.toggle(LED2);
+            lastTime += TOGGLE_DELAY;
+        }
         return;
     }
     // bluetooth connected
-    if (leds.getEndlessFlag()) {
-        leds.setBlinkFlag(false);
-        leds.setEndlessFlag(false);
+    if (btDisconnected) {
         leds.turnOff(LED1);
         leds.turnOff(LED2);
+        btDisconnected = false;
     }
 
     // update battery level
@@ -74,8 +82,12 @@ void loop() {
     blRemote.setBatteryLevel(battery.getLevel());
 
     // low battery indicator
-    if (battery.getLevel() <= 10) {
-        leds.setBlinkFlag(true);
+    if (battery.getLevel() < 10) {
+        static uint32_t lastTime = 0;
+        if (millis() - lastTime > BLINK_DELAY) {
+            leds.toggle(LED2);
+            lastTime += BLINK_DELAY;
+        }
     }
 
     // scan key matrix
@@ -92,31 +104,26 @@ void loop() {
     if (forceBLEDisconnect) {
         blRemote.disconnect();
     }
-
-    // process LEDs
-    leds.loop();
 }
 
 // this func is called by each button to read the pin state instead of
 // digitalRead() because we operate with a key matrix and not "a pin per
 // button". key matrix object will keep all states up to date as long as
 // KeyMatrix::loop() is called.
-int onReadPin(uint8_t buttonID) {
+int onReadPin(const uint8_t buttonID) {
     return matrix.getKeyState(BTN_MATRIX_MAP[buttonID][0], BTN_MATRIX_MAP[buttonID][1]);
 }
 
 // this is where button event logic happens
 // it's called by each button whenever there is a state change (press & release)
 // is detected (debounced on both press and release).
-int onButtonStateChange(uint8_t buttonID, bool state) {
-    Serial.println(buttonID);
-    Serial.println(state);
+int onButtonStateChange(const uint8_t buttonID, bool state) {
     if (state) {
         leds.turnOn(LED1);
     } else {
         bool anyPressed = false;
         for (int i = 0; i < NUM_BUTTONS; i++) {
-            anyPressed |= buttons[NUM_BUTTONS].isPressed();
+            anyPressed |= buttons[i].isPressed();
         }
         if (!anyPressed) {
             leds.turnOff(LED1);
@@ -142,14 +149,16 @@ int onButtonStateChange(uint8_t buttonID, bool state) {
         break;
     case BTN_ID_VOLUP:
         if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
-            blRemote.press(BLE_REMOTE_MUTE);
+            blRemote.click(BLE_REMOTE_MUTE);
+            Serial.println("hop");
         } else {
             state ? blRemote.press(BLE_REMOTE_VOLUP) : blRemote.release(BLE_REMOTE_VOLUP);
         }
         break;
     case BTN_ID_VOLDOWN:
         if (state && buttons[BTN_ID_VOLUP].isPressed()) {
-            blRemote.press(BLE_REMOTE_MUTE);
+            blRemote.click(BLE_REMOTE_MUTE);
+            Serial.println("hip");
         } else {
             state ? blRemote.press(BLE_REMOTE_VOLDOWN) : blRemote.release(BLE_REMOTE_VOLDOWN);
         }

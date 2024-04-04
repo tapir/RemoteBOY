@@ -1,26 +1,26 @@
 #include "Button.h"
+#include <Arduino.h>
+
+static const uint32_t BTN_DEBOUNCE_DELAY = 15;
 
 Button::Button(void) { }
 
-void Button::setup(uint8_t buttonID, uint32_t stateMask, int (*stateChangeCallback)(uint8_t, bool), int (*readPinCallback)(uint8_t)) {
+void Button::setup(const uint8_t buttonID, int (*stateChangeCallback)(const uint8_t, bool), int (*readPinCallback)(const uint8_t)) {
     this->stateChangeCallback = stateChangeCallback;
     this->readPinCallback     = readPinCallback;
     this->buttonID            = buttonID;
-    this->samples             = 0;
+    this->lastDebounceTime    = 0;
     this->state               = false;
-    this->stateMask           = stateMask;
+    this->lastState           = false;
 }
 
-// this simple debouncing routine is taken from
-// https://www.e-tinkers.com/2021/05/the-simplest-button-debounce-solution/
-// the idea is that you sample the button state multiple times until the sample looks like 0xFFFF
-// depending on how stateMask looks you can get up to 16 consecutive samples or less
-// 0x0000 -> 16 samples // 0xF000 -> 12 samples // 0xFF00 ->  8 samples
 int Button::loop(void) {
-    bool reading  = this->readPinCallback(this->buttonID);
-    this->samples = (this->samples << 1) | (this->state ^ reading) | this->stateMask;
-    if (this->samples == 0xFFFFFFFF) {
-        if (this->state != reading) {
+    bool reading = this->readPinCallback(this->buttonID);
+    if (reading != this->lastState) {
+        this->lastDebounceTime = millis();
+    }
+    if (millis() - this->lastDebounceTime > BTN_DEBOUNCE_DELAY) {
+        if (reading != this->state) {
             this->state = reading;
             int err     = this->stateChangeCallback(this->buttonID, reading);
             if (err < BTN_EXIT_SUCCESS) {
@@ -28,6 +28,7 @@ int Button::loop(void) {
             }
         }
     }
+    this->lastState = reading;
     return BTN_EXIT_SUCCESS;
 }
 

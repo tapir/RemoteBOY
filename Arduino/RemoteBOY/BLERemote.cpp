@@ -80,6 +80,12 @@ void BLERemote::release(const ButtonReport b) {
     this->sendReport();
 }
 
+void BLERemote::click(const ButtonReport b) {
+    this->press(b);
+    delay(80);
+    this->release(b);
+}
+
 void BLERemote::sendReport(void) {
     if (this->isConnected()) {
         this->inputConsumer->setValue((uint8_t*)this->_consumerButtons, sizeof(ButtonReport));
@@ -92,10 +98,12 @@ bool BLERemote::isConnected(void) {
 }
 
 void BLERemote::setBatteryLevel(uint8_t level) {
-    if (level != this->batteryLevel) {
-        this->batteryLevel = level;
-        if (hid != 0) {
-            this->hid->setBatteryLevel(level);
+    if (this->isConnected()) {
+        if (level != this->batteryLevel) {
+            this->batteryLevel = level;
+            if (hid != 0) {
+                this->hid->setBatteryLevel(level);
+            }
         }
     }
 }
