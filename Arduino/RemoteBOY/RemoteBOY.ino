@@ -49,10 +49,11 @@ void setup() {
 }
 
 void loop() {
-    // TODO: power management sleep and wake-up point
     static bool           btDisconnected = false;
     static const uint32_t TOGGLE_DELAY   = 500;
     static const uint32_t BLINK_DELAY    = 2000;
+
+    // TODO: power management sleep and wake-up point
 
     // wait until bluetooth is connected
     if (!blRemote.isConnected()) {
@@ -150,7 +151,6 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
     case BTN_ID_VOLUP:
         if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
             blRemote.click(BLE_REMOTE_MUTE);
-            Serial.println("hop");
         } else {
             state ? blRemote.press(BLE_REMOTE_VOLUP) : blRemote.release(BLE_REMOTE_VOLUP);
         }
@@ -158,7 +158,6 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
     case BTN_ID_VOLDOWN:
         if (state && buttons[BTN_ID_VOLUP].isPressed()) {
             blRemote.click(BLE_REMOTE_MUTE);
-            Serial.println("hip");
         } else {
             state ? blRemote.press(BLE_REMOTE_VOLDOWN) : blRemote.release(BLE_REMOTE_VOLDOWN);
         }
