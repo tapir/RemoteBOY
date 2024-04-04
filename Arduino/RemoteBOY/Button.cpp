@@ -2,7 +2,7 @@
 
 Button::Button(void) { }
 
-void Button::setup(uint8_t buttonID, uint16_t stateMask, int (*stateChangeCallback)(uint8_t, bool), int (*readPinCallback)(uint8_t)) {
+void Button::setup(uint8_t buttonID, uint32_t stateMask, int (*stateChangeCallback)(uint8_t, bool), int (*readPinCallback)(uint8_t)) {
     this->stateChangeCallback = stateChangeCallback;
     this->readPinCallback     = readPinCallback;
     this->buttonID            = buttonID;
@@ -19,11 +19,13 @@ void Button::setup(uint8_t buttonID, uint16_t stateMask, int (*stateChangeCallba
 int Button::loop(void) {
     bool reading  = this->readPinCallback(this->buttonID);
     this->samples = (this->samples << 1) | (this->state ^ reading) | this->stateMask;
-    if (this->samples == 0xFFFF) {
-        this->state = reading;
-        int r       = this->stateChangeCallback(this->buttonID, reading);
-        if (r < BTN_EXIT_SUCCESS) {
-            return r;
+    if (this->samples == 0xFFFFFFFF) {
+        if (this->state != reading) {
+            this->state = reading;
+            int err     = this->stateChangeCallback(this->buttonID, reading);
+            if (err < BTN_EXIT_SUCCESS) {
+                return err;
+            }
         }
     }
     return BTN_EXIT_SUCCESS;

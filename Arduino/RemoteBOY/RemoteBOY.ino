@@ -36,18 +36,17 @@ LEDs      leds;                 // led state
 KeyMatrix matrix;               // key matrix state
 Button    buttons[NUM_BUTTONS]; // button states
 BLERemote blRemote;             // bluetooth sender
-IRRemote  irRemote;             // infrared sender
 bool      forceBLEDisconnect = false;
 
 void setup() {
     battery.setup();
     leds.setup();
     blRemote.setup("RemoteBOY", "Lola Engineering", battery.getLevel());
-    irRemote.setup();
     matrix.setup();
     for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i].setup(i, 0, &onButtonStateChange, &onReadPin);
     }
+    Serial.begin(115200);
 }
 
 void loop() {
@@ -96,9 +95,6 @@ void loop() {
 
     // process LEDs
     leds.loop();
-
-    // process IR repeats
-    irRemote.loop();
 }
 
 // this func is called by each button to read the pin state instead of
@@ -109,182 +105,73 @@ int onReadPin(uint8_t buttonID) {
     return matrix.getKeyState(BTN_MATRIX_MAP[buttonID][0], BTN_MATRIX_MAP[buttonID][1]);
 }
 
-// this is where button event and button layer related logic happens
+// this is where button event logic happens
 // it's called by each button whenever there is a state change (press & release)
 // is detected (debounced on both press and release).
 int onButtonStateChange(uint8_t buttonID, bool state) {
-    static bool layer = false; // default layer
-    if (!layer) {
-        // default layer
-        // power        BT
-        // select       BT
-        // d-pad        BT
-        // back         BT
-        // home         BT
-        // volume up    IR
-        // volume down  IR
-        // mute         IR
-
-        if (state) {
-            leds.turnOn(LED1);
-        }
-
-        switch (buttonID) {
-        case BTN_ID_POWER:
-            if (state && buttons[BTN_ID_SELECT].isPressed()) {
-                forceBLEDisconnect = true;
-                return BTN_EXIT_BT_DISCONNECT;
-            } else {
-                state ? blRemote.press(BLE_REMOTE_POWER) : blRemote.release(BLE_REMOTE_POWER);
-            }
-            break;
-        case BTN_ID_SELECT:
-            if (state && buttons[BTN_ID_POWER].isPressed()) {
-                forceBLEDisconnect = true;
-                return BTN_EXIT_BT_DISCONNECT;
-            } else {
-                state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
-            }
-            break;
-        case BTN_ID_BACK:
-            if (state && buttons[BTN_ID_HOME].isPressed()) {
-                leds.turnOff(LED1);
-                leds.turnOn(LED2);
-                layer = true;
-                return BTN_EXIT_LAYER_CHANGE;
-            } else {
-                state ? blRemote.press(BLE_REMOTE_BACK) : blRemote.release(BLE_REMOTE_BACK);
-            }
-            break;
-        case BTN_ID_HOME:
-            if (state && buttons[BTN_ID_BACK].isPressed()) {
-                leds.turnOff(LED1);
-                leds.turnOn(LED2);
-                layer = true;
-                return BTN_EXIT_LAYER_CHANGE;
-            } else {
-                state ? blRemote.press(BLE_REMOTE_HOME) : blRemote.release(BLE_REMOTE_HOME);
-            }
-            break;
-        case BTN_ID_VOLUP:
-            if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
-                irRemote.press(IR_REMOTE_VOLMUTE, false);
-            } else {
-                state ? irRemote.press(IR_REMOTE_VOLUP, true) : irRemote.release();
-            }
-            break;
-        case BTN_ID_VOLDOWN:
-            if (state && buttons[BTN_ID_VOLUP].isPressed()) {
-                irRemote.press(IR_REMOTE_VOLMUTE, false);
-            } else {
-                state ? irRemote.press(IR_REMOTE_VOLDOWN, true) : irRemote.release();
-            }
-            break;
-        case BTN_ID_UP:
-            state ? blRemote.press(BLE_REMOTE_UP) : blRemote.release(BLE_REMOTE_UP);
-            break;
-        case BTN_ID_LEFT:
-            state ? blRemote.press(BLE_REMOTE_LEFT) : blRemote.release(BLE_REMOTE_LEFT);
-            break;
-        case BTN_ID_RIGHT:
-            state ? blRemote.press(BLE_REMOTE_RIGHT) : blRemote.release(BLE_REMOTE_RIGHT);
-            break;
-        case BTN_ID_DOWN:
-            state ? blRemote.press(BLE_REMOTE_DOWN) : blRemote.release(BLE_REMOTE_DOWN);
-            break;
-        }
+    Serial.println(buttonID);
+    Serial.println(state);
+    if (state) {
+        leds.turnOn(LED1);
     } else {
-        // secondary layer
-        // power            IR
-        // select           IR
-        // d-pad            IR
-        // back             IR
-        // home             IR
-        // mute             IR
-        // settings (volup) IR
-        // input (voldown)  IR
-        // mute             IR
-
-        if (state) {
-            leds.turnOn(LED2);
+        bool anyPressed = false;
+        for (int i = 0; i < NUM_BUTTONS; i++) {
+            anyPressed |= buttons[NUM_BUTTONS].isPressed();
         }
-
-        switch (buttonID) {
-        case BTN_ID_POWER:
-            if (state) {
-                if (buttons[BTN_ID_SELECT].isPressed()) {
-                    forceBLEDisconnect = true;
-                    return BTN_EXIT_BT_DISCONNECT;
-                } else {
-                    irRemote.press(IR_REMOTE_POWER, false);
-                }
-            }
-            break;
-        case BTN_ID_SELECT:
-            if (state) {
-                if (buttons[BTN_ID_POWER].isPressed()) {
-                    forceBLEDisconnect = true;
-                    return BTN_EXIT_BT_DISCONNECT;
-                } else {
-                    irRemote.press(IR_REMOTE_SELECT, false);
-                }
-            }
-            break;
-        case BTN_ID_BACK:
-            if (state) {
-                if (buttons[BTN_ID_HOME].isPressed()) {
-                    leds.turnOff(LED2);
-                    leds.turnOn(LED1);
-                    layer = false;
-                    return BTN_EXIT_LAYER_CHANGE;
-                } else {
-                    irRemote.press(IR_REMOTE_BACK, false);
-                }
-            }
-            break;
-        case BTN_ID_HOME:
-            if (state) {
-                if (buttons[BTN_ID_BACK].isPressed()) {
-                    leds.turnOff(LED2);
-                    leds.turnOn(LED1);
-                    layer = false;
-                    return BTN_EXIT_LAYER_CHANGE;
-                } else {
-                    irRemote.press(IR_REMOTE_HOME, false);
-                }
-            }
-            break;
-        case BTN_ID_VOLUP:
-            if (state) {
-                if (buttons[BTN_ID_VOLDOWN].isPressed()) {
-                    irRemote.press(IR_REMOTE_VOLMUTE, false);
-                } else {
-                    irRemote.press(IR_REMOTE_SETTINGS, false);
-                }
-            }
-            break;
-        case BTN_ID_VOLDOWN:
-            if (state) {
-                if (buttons[BTN_ID_VOLUP].isPressed()) {
-                    irRemote.press(IR_REMOTE_VOLMUTE, false);
-                } else {
-                    irRemote.press(IR_REMOTE_INPUT, false);
-                }
-            }
-            break;
-        case BTN_ID_UP:
-            state ? irRemote.press(IR_REMOTE_UP, true) : irRemote.release();
-            break;
-        case BTN_ID_LEFT:
-            state ? irRemote.press(IR_REMOTE_LEFT, true) : irRemote.release();
-            break;
-        case BTN_ID_RIGHT:
-            state ? irRemote.press(IR_REMOTE_RIGHT, true) : irRemote.release();
-            break;
-        case BTN_ID_DOWN:
-            state ? irRemote.press(IR_REMOTE_DOWN, true) : irRemote.release();
-            break;
+        if (!anyPressed) {
+            leds.turnOff(LED1);
         }
+    }
+
+    switch (buttonID) {
+    case BTN_ID_POWER:
+        if (state && buttons[BTN_ID_SELECT].isPressed()) {
+            forceBLEDisconnect = true;
+            return BTN_EXIT_BT_DISCONNECT;
+        } else {
+            state ? blRemote.press(BLE_REMOTE_POWER) : blRemote.release(BLE_REMOTE_POWER);
+        }
+        break;
+    case BTN_ID_SELECT:
+        if (state && buttons[BTN_ID_POWER].isPressed()) {
+            forceBLEDisconnect = true;
+            return BTN_EXIT_BT_DISCONNECT;
+        } else {
+            state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
+        }
+        break;
+    case BTN_ID_VOLUP:
+        if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
+            blRemote.press(BLE_REMOTE_MUTE);
+        } else {
+            state ? blRemote.press(BLE_REMOTE_VOLUP) : blRemote.release(BLE_REMOTE_VOLUP);
+        }
+        break;
+    case BTN_ID_VOLDOWN:
+        if (state && buttons[BTN_ID_VOLUP].isPressed()) {
+            blRemote.press(BLE_REMOTE_MUTE);
+        } else {
+            state ? blRemote.press(BLE_REMOTE_VOLDOWN) : blRemote.release(BLE_REMOTE_VOLDOWN);
+        }
+        break;
+    case BTN_ID_BACK:
+        state ? blRemote.press(BLE_REMOTE_BACK) : blRemote.release(BLE_REMOTE_BACK);
+        break;
+    case BTN_ID_HOME:
+        state ? blRemote.press(BLE_REMOTE_HOME) : blRemote.release(BLE_REMOTE_HOME);
+        break;
+    case BTN_ID_UP:
+        state ? blRemote.press(BLE_REMOTE_UP) : blRemote.release(BLE_REMOTE_UP);
+        break;
+    case BTN_ID_LEFT:
+        state ? blRemote.press(BLE_REMOTE_LEFT) : blRemote.release(BLE_REMOTE_LEFT);
+        break;
+    case BTN_ID_RIGHT:
+        state ? blRemote.press(BLE_REMOTE_RIGHT) : blRemote.release(BLE_REMOTE_RIGHT);
+        break;
+    case BTN_ID_DOWN:
+        state ? blRemote.press(BLE_REMOTE_DOWN) : blRemote.release(BLE_REMOTE_DOWN);
+        break;
     }
 
     return BTN_EXIT_SUCCESS;
