@@ -140,14 +140,6 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
             state ? blRemote.press(BLE_REMOTE_POWER) : blRemote.release(BLE_REMOTE_POWER);
         }
         break;
-    case BTN_ID_SELECT:
-        if (state && buttons[BTN_ID_POWER].isPressed()) {
-            forceBLEDisconnect = true;
-            return BTN_EXIT_BT_DISCONNECT;
-        } else {
-            state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
-        }
-        break;
     case BTN_ID_VOLUP:
         if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
             blRemote.click(BLE_REMOTE_MUTE);
@@ -161,6 +153,9 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
         } else {
             state ? blRemote.press(BLE_REMOTE_VOLDOWN) : blRemote.release(BLE_REMOTE_VOLDOWN);
         }
+        break;
+    case BTN_ID_SELECT:
+        state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
         break;
     case BTN_ID_BACK:
         state ? blRemote.press(BLE_REMOTE_BACK) : blRemote.release(BLE_REMOTE_BACK);
