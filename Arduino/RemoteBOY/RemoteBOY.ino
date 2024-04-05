@@ -3,6 +3,7 @@
 #include "Button.h"
 #include "KeyMatrix.h"
 #include "LED.h"
+#include "esp_clk.h"
 
 static const size_t NUM_BUTTONS = NUM_ROWS * NUM_COLS;
 
@@ -30,6 +31,10 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
     { 2, 0 }, { 3, 0 }, { 3, 1 }, { 4, 0 }, { 4, 1 }
 };
 
+// sleep
+static const uint32_t SLEEP_TIMEOUT = 60000;
+uint32_t              sleepTimer    = millis();
+
 Battery   battery;              // battery state
 LEDs      leds;                 // led state
 KeyMatrix matrix;               // key matrix state
@@ -44,29 +49,49 @@ void setup() {
     for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i].setup(i, &onButtonStateChange, &onReadPin);
     }
+
+    // set row pins to wakeup
+    gpio_wakeup_enable(GPIO_NUM_3, GPIO_INTR_LOW_LEVEL);
+    gpio_wakeup_enable(GPIO_NUM_4, GPIO_INTR_LOW_LEVEL);
+    gpio_wakeup_enable(GPIO_NUM_8, GPIO_INTR_LOW_LEVEL);
+    gpio_wakeup_enable(GPIO_NUM_9, GPIO_INTR_LOW_LEVEL);
+    gpio_wakeup_enable(GPIO_NUM_20, GPIO_INTR_LOW_LEVEL);
+    esp_sleep_enable_gpio_wakeup();
+
     Serial.begin(115200);
 }
 
 void loop() {
     static bool           btDisconnected = false;
+    static uint32_t       lastBlinkTime  = 0;
     static const uint32_t TOGGLE_DELAY   = 500;
     static const uint32_t BLINK_DELAY    = 2000;
 
-    // TODO: power management sleep and wake-up point
+    // power management sleep and wake-up point
+    if (millis() - sleepTimer > SLEEP_TIMEOUT) {
+        Serial.println("Sleeping...");
+        btDisconnected = false;
+        blRemote.setDisconnected();
+        sleep();
+        Serial.println("Waking up...");
+        wakeup();
+        Serial.println("Woken up...");
+        sleepTimer = millis();
+    }
 
     // wait until bluetooth is connected
     if (!blRemote.isConnected()) {
-        static uint32_t lastTime = 0;
         if (!btDisconnected) {
+            Serial.println("BT connecting...");
             leds.turnOn(LED1);
             leds.turnOff(LED2);
             btDisconnected = true;
-            lastTime       = millis();
+            lastBlinkTime  = millis();
         }
-        if (millis() - lastTime > TOGGLE_DELAY) {
+        if (millis() - lastBlinkTime > TOGGLE_DELAY) {
             leds.toggle(LED1);
             leds.toggle(LED2);
-            lastTime += TOGGLE_DELAY;
+            lastBlinkTime += TOGGLE_DELAY;
         }
         return;
     }
@@ -99,6 +124,35 @@ void loop() {
             break;
         }
     }
+}
+
+void sleep() {
+    // rows
+    gpio_hold_en(GPIO_NUM_3);
+    gpio_hold_en(GPIO_NUM_4);
+    gpio_hold_en(GPIO_NUM_8);
+    gpio_hold_en(GPIO_NUM_9);
+    gpio_hold_en(GPIO_NUM_20);
+
+    // columns
+    digitalWrite(GPIO_NUM_10, LOW);
+    digitalWrite(GPIO_NUM_21, LOW);
+    gpio_hold_en(GPIO_NUM_10);
+    gpio_hold_en(GPIO_NUM_21);
+
+    esp_light_sleep_start();
+}
+
+void wakeup() {
+    gpio_hold_dis(GPIO_NUM_3);
+    gpio_hold_dis(GPIO_NUM_4);
+    gpio_hold_dis(GPIO_NUM_8);
+    gpio_hold_dis(GPIO_NUM_9);
+    gpio_hold_dis(GPIO_NUM_20);
+    gpio_hold_dis(GPIO_NUM_10);
+    gpio_hold_dis(GPIO_NUM_21);
+    digitalWrite(GPIO_NUM_10, HIGH);
+    digitalWrite(GPIO_NUM_21, HIGH);
 }
 
 // this func is called by each button to read the pin state instead of
@@ -169,6 +223,9 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
         state ? blRemote.press(BLE_REMOTE_DOWN) : blRemote.release(BLE_REMOTE_DOWN);
         break;
     }
+
+    // reset sleep timer
+    sleepTimer = millis();
 
     return BTN_EXIT_SUCCESS;
 }

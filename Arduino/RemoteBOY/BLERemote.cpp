@@ -98,6 +98,10 @@ bool BLERemote::isConnected(void) {
     return this->connectionStatus->connected;
 }
 
+void BLERemote::setDisconnected(void) {
+    this->connectionStatus->connected = false;
+}
+
 void BLERemote::setBatteryLevel(uint8_t level) {
     if (this->isConnected()) {
         if (level != this->batteryLevel) {

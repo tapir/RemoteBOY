@@ -41,6 +41,7 @@ public:
     void press(const ButtonReport b);
     void release(const ButtonReport b);
     void click(const ButtonReport b);
+    void setDisconnected(void);
     bool isConnected(void);
     void disconnect(void);
     void setBatteryLevel(uint8_t level);
