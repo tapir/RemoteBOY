@@ -115,7 +115,9 @@ void BLERemote::setBatteryLevel(uint8_t level) {
 
 void BLERemote::taskServer(void* pvParameter) {
     BLERemote* BLERemoteInstance = (BLERemote*)pvParameter;
+
     NimBLEDevice::init(BLERemoteInstance->deviceName);
+    NimBLEDevice::setSecurityAuth(true, false, false);
 
     NimBLEServer* pServer = NimBLEDevice::createServer();
     pServer->setCallbacks(BLERemoteInstance->connectionStatus);
@@ -124,9 +126,6 @@ void BLERemote::taskServer(void* pvParameter) {
     BLERemoteInstance->hid->manufacturer()->setValue(BLERemoteInstance->deviceManufacturer);
     BLERemoteInstance->hid->pnp(BLE_VEND_SRC, BLE_VEND_ID, BLE_PROD_ID, BLE_PROD_VER);
     BLERemoteInstance->hid->hidInfo(0x00, 0x01);
-
-    NimBLEDevice::setSecurityAuth(true, false, false);
-
     BLERemoteInstance->hid->setBatteryLevel(BLERemoteInstance->batteryLevel);
     BLERemoteInstance->hid->reportMap((uint8_t*)_hidReportDescriptor, sizeof(_hidReportDescriptor));
     BLERemoteInstance->hid->startServices();
