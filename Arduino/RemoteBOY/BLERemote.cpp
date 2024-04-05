@@ -1,11 +1,6 @@
-#include "HIDKeyboardTypes.h"
-#include "HIDTypes.h"
-#include "NimBLEHIDDevice.h"
-#include "sdkconfig.h"
 #include <NimBLEDevice.h>
 #include <NimBLEServer.h>
 #include <NimBLEUtils.h>
-#include <driver/adc.h>
 
 #include "BLERemote.h"
 #include "BLEStatus.h"

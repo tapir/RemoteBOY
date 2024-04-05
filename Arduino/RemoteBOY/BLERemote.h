@@ -1,11 +1,10 @@
 #ifndef BLE_REMOTE_H
 #define BLE_REMOTE_H
-#include "sdkconfig.h"
-#if defined(CONFIG_BT_ENABLED)
 
 #include "BLEStatus.h"
-#include "NimBLECharacteristic.h"
-#include "NimBLEHIDDevice.h"
+#include <NimBLECharacteristic.h>
+#include <NimBLEHIDDevice.h>
+#include <NimBLEServer.h>
 
 typedef uint8_t ButtonReport[2];
 
@@ -48,5 +47,4 @@ protected:
     virtual void onStarted(NimBLEServer* pServer) {};
 };
 
-#endif // CONFIG_BT_ENABLED
 #endif // BLE_REMOTE_H

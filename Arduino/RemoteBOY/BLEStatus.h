@@ -1,12 +1,6 @@
 #ifndef BLE_STATUS_H
 #define BLE_STATUS_H
-#include "sdkconfig.h"
-#if defined(CONFIG_BT_ENABLED)
 
-#include "nimconfig.h"
-#if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
-
-#include "NimBLECharacteristic.h"
 #include <NimBLEServer.h>
 
 class BLEStatus : public NimBLEServerCallbacks {
@@ -17,6 +11,4 @@ public:
     void onDisconnect(NimBLEServer* pServer);
 };
 
-#endif // CONFIG_BT_NIMBLE_ROLE_PERIPHERAL
-#endif // CONFIG_BT_ENABLED
 #endif // BLE_STATUS_H
