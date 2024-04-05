@@ -16,10 +16,11 @@ static const ButtonReport BLE_REMOTE_HOME    = { 8, 0 };
 static const ButtonReport BLE_REMOTE_VOLUP   = { 16, 0 };
 static const ButtonReport BLE_REMOTE_VOLDOWN = { 32, 0 };
 static const ButtonReport BLE_REMOTE_MUTE    = { 64, 0 };
-static const ButtonReport BLE_REMOTE_UP      = { 128, 0 };
-static const ButtonReport BLE_REMOTE_DOWN    = { 0, 1 };
-static const ButtonReport BLE_REMOTE_LEFT    = { 0, 2 };
-static const ButtonReport BLE_REMOTE_RIGHT   = { 0, 4 };
+static const ButtonReport BLE_REMOTE_MENU    = { 128, 0 };
+static const ButtonReport BLE_REMOTE_UP      = { 0, 1 };
+static const ButtonReport BLE_REMOTE_DOWN    = { 0, 2 };
+static const ButtonReport BLE_REMOTE_LEFT    = { 0, 4 };
+static const ButtonReport BLE_REMOTE_RIGHT   = { 0, 8 };
 
 class BLERemote {
 private:

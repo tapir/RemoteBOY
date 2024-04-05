@@ -34,12 +34,13 @@ static const uint8_t _hidReportDescriptor[]
           USAGE(1), 0xE9,                       //   Volume Increase
           USAGE(1), 0xEA,                       //   Volume Decrease
           USAGE(1), 0xE2,                       //   Volume Mute
+          USAGE(1), 0x40,                       //   Menu
           USAGE(1), 0x42,                       //   Menu Up
           USAGE(1), 0x43,                       //   Menu Down
           USAGE(1), 0x44,                       //   Menu Left
           USAGE(1), 0x45,                       //   Menu Right
           HIDINPUT(1), 0x02,                    //   INPUT (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-          REPORT_SIZE(1), 0x05,                 //   REPORT_SIZE (5) - Padding 5 bit
+          REPORT_SIZE(1), 0x04,                 //   REPORT_SIZE (4) - Padding 4 bit
           REPORT_COUNT(1), 0x01,                //   REPORT_COUNT (1)
           HIDINPUT(1), 0x03,                    //   INPUT
           END_COLLECTION(0)                     // END COLLECTION

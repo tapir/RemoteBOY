@@ -155,7 +155,11 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
         }
         break;
     case BTN_ID_SELECT:
-        state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
+        if (state && buttons[BTN_ID_HOME].isPressed()) {
+            blRemote.click(BLE_REMOTE_MENU);
+        } else {
+            state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
+        }
         break;
     case BTN_ID_BACK:
         state ? blRemote.press(BLE_REMOTE_BACK) : blRemote.release(BLE_REMOTE_BACK);
