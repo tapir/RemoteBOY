@@ -119,7 +119,6 @@ void BLERemote::taskServer(void* pvParameter) {
 
     NimBLEServer* pServer = NimBLEDevice::createServer();
     pServer->setCallbacks(BLERemoteInstance->connectionStatus);
-    BLERemoteInstance->bleServer     = pServer;
     BLERemoteInstance->hid           = new NimBLEHIDDevice(pServer);
     BLERemoteInstance->inputConsumer = BLERemoteInstance->hid->inputReport(BLE_CONSUMER_REPORT_ID);
     BLERemoteInstance->hid->manufacturer()->setValue(BLERemoteInstance->deviceManufacturer);

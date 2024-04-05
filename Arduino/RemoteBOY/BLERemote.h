@@ -25,7 +25,6 @@ static const ButtonReport BLE_REMOTE_RIGHT   = { 0, 8 };
 class BLERemote {
 private:
     ButtonReport          _consumerButtons;
-    NimBLEServer*         bleServer;
     BLEStatus*            connectionStatus;
     NimBLEHIDDevice*      hid;
     NimBLECharacteristic* inputConsumer;
