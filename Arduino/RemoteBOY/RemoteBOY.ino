@@ -58,7 +58,7 @@ void setup() {
     gpio_wakeup_enable(GPIO_NUM_20, GPIO_INTR_LOW_LEVEL);
     esp_sleep_enable_gpio_wakeup();
 
-    Serial.begin(115200);
+    // Serial.begin(115200);
 }
 
 void loop() {
@@ -69,13 +69,13 @@ void loop() {
 
     // power management sleep and wake-up point
     if (millis() - sleepTimer > SLEEP_TIMEOUT) {
-        Serial.println("Sleeping...");
+        // Serial.println("Sleeping...");
         btDisconnected = false;
         blRemote.setDisconnected();
         sleep();
-        Serial.println("Waking up...");
+        // Serial.println("Waking up...");
         wakeup();
-        Serial.println("Woken up...");
+        // Serial.println("Woken up...");
         sleepTimer = millis();
     }
 
