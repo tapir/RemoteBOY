@@ -35,7 +35,6 @@ LEDs      leds;                 // led state
 KeyMatrix matrix;               // key matrix state
 Button    buttons[NUM_BUTTONS]; // button states
 BLERemote blRemote;             // bluetooth sender
-bool      forceBLEDisconnect = false;
 
 void setup() {
     battery.setup();
@@ -100,11 +99,6 @@ void loop() {
             break;
         }
     }
-
-    // disconnect bluetooth if necessary
-    if (forceBLEDisconnect) {
-        blRemote.disconnect();
-    }
 }
 
 // this func is called by each button to read the pin state instead of
@@ -132,14 +126,6 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
     }
 
     switch (buttonID) {
-    case BTN_ID_POWER:
-        if (state && buttons[BTN_ID_SELECT].isPressed()) {
-            forceBLEDisconnect = true;
-            return BTN_EXIT_BT_DISCONNECT;
-        } else {
-            state ? blRemote.press(BLE_REMOTE_POWER) : blRemote.release(BLE_REMOTE_POWER);
-        }
-        break;
     case BTN_ID_VOLUP:
         if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
             blRemote.click(BLE_REMOTE_MUTE);
@@ -160,6 +146,9 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
         } else {
             state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
         }
+        break;
+    case BTN_ID_POWER:
+        state ? blRemote.press(BLE_REMOTE_POWER) : blRemote.release(BLE_REMOTE_POWER);
         break;
     case BTN_ID_BACK:
         state ? blRemote.press(BLE_REMOTE_BACK) : blRemote.release(BLE_REMOTE_BACK);
