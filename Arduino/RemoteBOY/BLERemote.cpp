@@ -26,7 +26,7 @@ static const uint8_t _hidReportDescriptor[]
           LOGICAL_MINIMUM(1), 0x00,             //   LOGICAL_MINIMUM (0)
           LOGICAL_MAXIMUM(1), 0x01,             //   LOGICAL_MAXIMUM (1)
           REPORT_SIZE(1), 0x01,                 //   REPORT_SIZE (1)
-          REPORT_COUNT(1), 0x0B,                //   REPORT_COUNT (11)
+          REPORT_COUNT(1), 0x0C,                //   REPORT_COUNT (12)
           USAGE(1), 0x30,                       //   Power
           USAGE(1), 0x41,                       //   Menu Pick (Select)
           USAGE(1), 0x46,                       //   Menu Escape (Back)
