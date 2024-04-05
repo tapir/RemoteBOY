@@ -12,10 +12,9 @@
 class BLEStatus : public NimBLEServerCallbacks {
 public:
     BLEStatus(void);
-    bool                  connected = false;
-    void                  onConnect(NimBLEServer* pServer, ble_gap_conn_desc* desc);
-    void                  onDisconnect(NimBLEServer* pServer);
-    NimBLECharacteristic* inputConsumer;
+    bool connected = false;
+    void onConnect(NimBLEServer* pServer, ble_gap_conn_desc* desc);
+    void onDisconnect(NimBLEServer* pServer);
 };
 
 #endif // CONFIG_BT_NIMBLE_ROLE_PERIPHERAL

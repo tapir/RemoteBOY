@@ -62,31 +62,28 @@ void setup() {
 }
 
 void loop() {
-    static bool           btDisconnected = false;
-    static uint32_t       lastBlinkTime  = 0;
-    static const uint32_t TOGGLE_DELAY   = 500;
-    static const uint32_t BLINK_DELAY    = 2000;
+    static bool           btOnce        = false;
+    static uint32_t       lastBlinkTime = 0;
+    static const uint32_t TOGGLE_DELAY  = 500;
+    static const uint32_t BLINK_DELAY   = 2000;
 
     // power management sleep and wake-up point
     if (millis() - sleepTimer > SLEEP_TIMEOUT) {
-        // Serial.println("Sleeping...");
-        btDisconnected = false;
+        btOnce = false;
         blRemote.setDisconnected();
         sleep();
-        // Serial.println("Waking up...");
         wakeup();
-        // Serial.println("Woken up...");
         sleepTimer = millis();
     }
 
     // wait until bluetooth is connected
     if (!blRemote.isConnected()) {
-        if (!btDisconnected) {
+        if (!btOnce) {
             Serial.println("BT connecting...");
             leds.turnOn(LED1);
             leds.turnOff(LED2);
-            btDisconnected = true;
-            lastBlinkTime  = millis();
+            btOnce        = true;
+            lastBlinkTime = millis();
         }
         if (millis() - lastBlinkTime > TOGGLE_DELAY) {
             leds.toggle(LED1);
@@ -96,10 +93,10 @@ void loop() {
         return;
     }
     // bluetooth connected
-    if (btDisconnected) {
+    if (btOnce) {
         leds.turnOff(LED1);
         leds.turnOff(LED2);
-        btDisconnected = false;
+        btOnce = false;
     }
 
     // update battery level

@@ -119,17 +119,16 @@ void BLERemote::taskServer(void* pvParameter) {
 
     NimBLEServer* pServer = NimBLEDevice::createServer();
     pServer->setCallbacks(BLERemoteInstance->connectionStatus);
-    pServer->advertiseOnDisconnect(true);
-    BLERemoteInstance->bleServer                       = pServer;
-    BLERemoteInstance->hid                             = new NimBLEHIDDevice(pServer);
-    BLERemoteInstance->inputConsumer                   = BLERemoteInstance->hid->inputReport(BLE_CONSUMER_REPORT_ID);
-    BLERemoteInstance->connectionStatus->inputConsumer = BLERemoteInstance->inputConsumer;
+    BLERemoteInstance->bleServer     = pServer;
+    BLERemoteInstance->hid           = new NimBLEHIDDevice(pServer);
+    BLERemoteInstance->inputConsumer = BLERemoteInstance->hid->inputReport(BLE_CONSUMER_REPORT_ID);
     BLERemoteInstance->hid->manufacturer()->setValue(BLERemoteInstance->deviceManufacturer);
     BLERemoteInstance->hid->pnp(BLE_VEND_SRC, BLE_VEND_ID, BLE_PROD_ID, BLE_PROD_VER);
     BLERemoteInstance->hid->hidInfo(0x00, 0x01);
 
     NimBLEDevice::setSecurityAuth(true, false, false);
 
+    BLERemoteInstance->hid->setBatteryLevel(BLERemoteInstance->batteryLevel);
     BLERemoteInstance->hid->reportMap((uint8_t*)_hidReportDescriptor, sizeof(_hidReportDescriptor));
     BLERemoteInstance->hid->startServices();
     BLERemoteInstance->onStarted(pServer);
@@ -138,15 +137,6 @@ void BLERemote::taskServer(void* pvParameter) {
     pAdvertising->setAppearance(BLE_HID_REMOTE_APPEARANCE);
     pAdvertising->addServiceUUID(BLERemoteInstance->hid->hidService()->getUUID());
     pAdvertising->start();
-    BLERemoteInstance->hid->setBatteryLevel(BLERemoteInstance->batteryLevel);
 
     vTaskDelay(portMAX_DELAY);
-}
-
-void BLERemote::disconnect(void) {
-    size_t peersNum = this->bleServer->getConnectedCount();
-    for (int i = 0; i < peersNum; i++) {
-        uint16_t connID = this->bleServer->getPeerInfo(i).getConnHandle();
-        this->bleServer->disconnect(connID);
-    }
 }
