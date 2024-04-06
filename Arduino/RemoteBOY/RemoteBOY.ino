@@ -141,15 +141,7 @@ void sleep() {
 }
 
 void wakeup() {
-    gpio_hold_dis(GPIO_NUM_3);
-    gpio_hold_dis(GPIO_NUM_4);
-    gpio_hold_dis(GPIO_NUM_8);
-    gpio_hold_dis(GPIO_NUM_9);
-    gpio_hold_dis(GPIO_NUM_20);
-    gpio_hold_dis(GPIO_NUM_10);
-    gpio_hold_dis(GPIO_NUM_21);
-    digitalWrite(GPIO_NUM_10, HIGH);
-    digitalWrite(GPIO_NUM_21, HIGH);
+    ESP.restart();
 }
 
 // this func is called by each button to read the pin state instead of
