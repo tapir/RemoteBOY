@@ -141,6 +141,14 @@ void sleep() {
 }
 
 void wakeup() {
+    // for some reason restart doesn't clear hold states
+    gpio_hold_dis(GPIO_NUM_3);
+    gpio_hold_dis(GPIO_NUM_4);
+    gpio_hold_dis(GPIO_NUM_8);
+    gpio_hold_dis(GPIO_NUM_9);
+    gpio_hold_dis(GPIO_NUM_20);
+    gpio_hold_dis(GPIO_NUM_10);
+    gpio_hold_dis(GPIO_NUM_21);
     ESP.restart();
 }
 
