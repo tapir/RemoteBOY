@@ -42,6 +42,8 @@ public:
     void setDisconnected(void);
     bool isConnected(void);
     void setBatteryLevel(uint8_t level);
+    void end(void);
+    void disconnectAll(void);
 
 protected:
     virtual void onStarted(NimBLEServer* pServer) {};

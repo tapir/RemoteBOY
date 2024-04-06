@@ -108,6 +108,22 @@ void BLERemote::setBatteryLevel(uint8_t level) {
     }
 }
 
+void BLERemote::end(void) {
+    NimBLEDevice::deinit();
+}
+
+void BLERemote::disconnectAll(void) {
+    size_t numClients = NimBLEDevice::getClientListSize();
+    if (numClients > 0) {
+        std::list<NimBLEClient*>* clientList = NimBLEDevice::getClientList();
+        for (auto it = clientList->begin(); it != clientList->end(); it++) {
+            if ((*it)->isConnected()) {
+                (*it)->disconnect();
+            }
+        }
+    }
+}
+
 void BLERemote::taskServer(void* pvParameter) {
     BLERemote* BLERemoteInstance = (BLERemote*)pvParameter;
 

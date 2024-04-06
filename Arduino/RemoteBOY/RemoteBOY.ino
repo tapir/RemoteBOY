@@ -149,6 +149,8 @@ void wakeup() {
     gpio_hold_dis(GPIO_NUM_20);
     gpio_hold_dis(GPIO_NUM_10);
     gpio_hold_dis(GPIO_NUM_21);
+    blRemote.disconnectAll();
+    blRemote.end();
     ESP.restart();
 }
 
