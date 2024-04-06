@@ -136,6 +136,10 @@ void sleep() {
     gpio_hold_en(GPIO_NUM_10);
     gpio_hold_en(GPIO_NUM_21);
 
+    // BLE shut down
+    blRemote.disconnectAll();
+    blRemote.end();
+
     esp_light_sleep_start();
 }
 
@@ -148,8 +152,6 @@ void wakeup() {
     gpio_hold_dis(GPIO_NUM_20);
     gpio_hold_dis(GPIO_NUM_10);
     gpio_hold_dis(GPIO_NUM_21);
-    blRemote.disconnectAll();
-    blRemote.end();
     ESP.restart();
 }
 
