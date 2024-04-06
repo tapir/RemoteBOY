@@ -69,11 +69,11 @@ void loop() {
 
     // power management sleep and wake-up point
     if (millis() - sleepTimer > SLEEP_TIMEOUT) {
-        btOnce = false;
-        blRemote.setDisconnected();
+        // btOnce = false;
+        // blRemote.setDisconnected();
         sleep();
         wakeup();
-        sleepTimer = millis();
+        // sleepTimer = millis();
     }
 
     // wait until bluetooth is connected
