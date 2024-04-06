@@ -32,6 +32,12 @@ int Button::loop(void) {
     return BTN_EXIT_SUCCESS;
 }
 
+void Button::triggerClickEvent() {
+    this->stateChangeCallback(this->buttonID, true);
+    delay(80);
+    this->stateChangeCallback(this->buttonID, false);
+}
+
 bool Button::isPressed(void) {
     return this->state;
 }

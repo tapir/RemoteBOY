@@ -12,6 +12,7 @@ public:
     void setup(const uint8_t buttonID, int (*stateChangeCallback)(const uint8_t, bool), int (*readPinCallback)(const uint8_t));
     int  loop(void);
     bool isPressed(void);
+    void triggerClickEvent(void);
 
 private:
     int      buttonID;

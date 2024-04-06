@@ -79,7 +79,6 @@ void loop() {
     // wait until bluetooth is connected
     if (!blRemote.isConnected()) {
         if (!btOnce) {
-            Serial.println("BT connecting...");
             leds.turnOn(LED1);
             leds.turnOff(LED2);
             btOnce        = true;
