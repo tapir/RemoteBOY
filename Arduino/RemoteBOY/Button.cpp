@@ -1,7 +1,7 @@
 #include "Button.h"
 #include <Arduino.h>
 
-static const uint32_t BTN_DEBOUNCE_DELAY = 15;
+static const uint32_t BTN_DEBOUNCE_DELAY = 50;
 
 Button::Button(void) { }
 

@@ -11,6 +11,7 @@ public:
     KeyMatrix(void);
     void setup(void);
     void loop(void);
+    void reset(void);
     int  getKeyState(size_t row, size_t col);
 
 private:

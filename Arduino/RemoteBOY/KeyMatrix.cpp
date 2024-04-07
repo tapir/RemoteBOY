@@ -43,6 +43,14 @@ void KeyMatrix::loop(void) {
     }
 }
 
+void KeyMatrix::reset(void) {
+    for (int c = 0; c < NUM_COLS; c++) {
+        for (int r = 0; r < NUM_ROWS; r++) {
+            this->state[r][c] = 0;
+        }
+    }
+}
+
 int KeyMatrix::getKeyState(size_t row, size_t col) {
     if (row < NUM_ROWS && col < NUM_COLS) {
         return this->state[row][col];

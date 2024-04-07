@@ -44,34 +44,34 @@ static const uint8_t _hidReportDescriptor[]
 BLERemote::BLERemote(void) { }
 
 void BLERemote::setup(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel) {
-    this->_consumerButtons[0] = 0;
-    this->_consumerButtons[1] = 0;
-    this->hid                 = 0;
-    this->deviceName          = deviceName;
-    this->deviceManufacturer  = deviceManufacturer;
-    this->batteryLevel        = batteryLevel;
-    this->connectionStatus    = new BLEStatus();
+    this->consumerButtons[0] = 0;
+    this->consumerButtons[1] = 0;
+    this->hid                = 0;
+    this->deviceName         = deviceName;
+    this->deviceManufacturer = deviceManufacturer;
+    this->batteryLevel       = batteryLevel;
+    this->connectionStatus   = new BLEStatus();
     xTaskCreate(this->taskServer, "server", 20000, (void*)this, 1, NULL);
 }
 
 void BLERemote::press(const ButtonReport b) {
     uint16_t b_16            = b[1] | (b[0] << 8);
-    uint16_t buttonReport_16 = this->_consumerButtons[1] | (this->_consumerButtons[0] << 8);
+    uint16_t buttonReport_16 = this->consumerButtons[1] | (this->consumerButtons[0] << 8);
 
     buttonReport_16 |= b_16;
-    this->_consumerButtons[0] = (uint8_t)((buttonReport_16 & 0xFF00) >> 8);
-    this->_consumerButtons[1] = (uint8_t)(buttonReport_16 & 0x00FF);
+    this->consumerButtons[0] = (uint8_t)((buttonReport_16 & 0xFF00) >> 8);
+    this->consumerButtons[1] = (uint8_t)(buttonReport_16 & 0x00FF);
 
     this->sendReport();
 }
 
 void BLERemote::release(const ButtonReport b) {
     uint16_t b_16            = b[1] | (b[0] << 8);
-    uint16_t buttonReport_16 = this->_consumerButtons[1] | (this->_consumerButtons[0] << 8);
+    uint16_t buttonReport_16 = this->consumerButtons[1] | (this->consumerButtons[0] << 8);
 
     buttonReport_16 &= ~b_16;
-    this->_consumerButtons[0] = (uint8_t)((buttonReport_16 & 0xFF00) >> 8);
-    this->_consumerButtons[1] = (uint8_t)(buttonReport_16 & 0x00FF);
+    this->consumerButtons[0] = (uint8_t)((buttonReport_16 & 0xFF00) >> 8);
+    this->consumerButtons[1] = (uint8_t)(buttonReport_16 & 0x00FF);
 
     this->sendReport();
 }
@@ -84,17 +84,13 @@ void BLERemote::click(const ButtonReport b) {
 
 void BLERemote::sendReport(void) {
     if (this->isConnected()) {
-        this->inputConsumer->setValue((uint8_t*)this->_consumerButtons, sizeof(ButtonReport));
+        this->inputConsumer->setValue((uint8_t*)this->consumerButtons, sizeof(ButtonReport));
         this->inputConsumer->notify();
     }
 }
 
 bool BLERemote::isConnected(void) {
     return this->connectionStatus->connected;
-}
-
-void BLERemote::setDisconnected(void) {
-    this->connectionStatus->connected = false;
 }
 
 void BLERemote::setBatteryLevel(uint8_t level) {
@@ -109,11 +105,8 @@ void BLERemote::setBatteryLevel(uint8_t level) {
 }
 
 void BLERemote::end(void) {
-    NimBLEDevice::deinit();
-}
-
-void BLERemote::disconnectAll(void) {
-    size_t numClients = NimBLEDevice::getClientListSize();
+    this->connectionStatus->connected = false;
+    size_t numClients                 = NimBLEDevice::getClientListSize();
     if (numClients > 0) {
         std::list<NimBLEClient*>* clientList = NimBLEDevice::getClientList();
         for (auto it = clientList->begin(); it != clientList->end(); it++) {
@@ -122,6 +115,7 @@ void BLERemote::disconnectAll(void) {
             }
         }
     }
+    NimBLEDevice::deinit();
 }
 
 void BLERemote::taskServer(void* pvParameter) {
@@ -140,7 +134,7 @@ void BLERemote::taskServer(void* pvParameter) {
     BLERemoteInstance->hid->setBatteryLevel(BLERemoteInstance->batteryLevel);
     BLERemoteInstance->hid->reportMap((uint8_t*)_hidReportDescriptor, sizeof(_hidReportDescriptor));
     BLERemoteInstance->hid->startServices();
-    BLERemoteInstance->onStarted(pServer);
+    // BLERemoteInstance->onStarted(pServer);
 
     NimBLEAdvertising* pAdvertising = pServer->getAdvertising();
     pAdvertising->setAppearance(BLE_HID_REMOTE_APPEARANCE);

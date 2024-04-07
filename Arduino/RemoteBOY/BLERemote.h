@@ -23,7 +23,7 @@ static const ButtonReport BLE_REMOTE_RIGHT   = { 0, 8 };
 
 class BLERemote {
 private:
-    ButtonReport          _consumerButtons;
+    ButtonReport          consumerButtons;
     BLEStatus*            connectionStatus;
     NimBLEHIDDevice*      hid;
     NimBLECharacteristic* inputConsumer;
@@ -39,14 +39,12 @@ public:
     void press(const ButtonReport b);
     void release(const ButtonReport b);
     void click(const ButtonReport b);
-    void setDisconnected(void);
     bool isConnected(void);
     void setBatteryLevel(uint8_t level);
     void end(void);
-    void disconnectAll(void);
 
-protected:
-    virtual void onStarted(NimBLEServer* pServer) {};
+    // protected:
+    //     virtual void onStarted(NimBLEServer* pServer) {};
 };
 
 #endif // BLE_REMOTE_H
