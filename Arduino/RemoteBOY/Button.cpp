@@ -9,33 +9,30 @@ void Button::setup(const uint8_t buttonID, int (*stateChangeCallback)(const uint
     this->stateChangeCallback = stateChangeCallback;
     this->readPinCallback     = readPinCallback;
     this->buttonID            = buttonID;
-    this->lastDebounceTime    = 0;
     this->state               = false;
-    this->lastState           = false;
 }
 
 int Button::loop(void) {
-    bool reading = this->readPinCallback(this->buttonID);
-    if (reading != this->lastState) {
-        this->lastDebounceTime = millis();
-    }
-    if (millis() - this->lastDebounceTime > BTN_DEBOUNCE_DELAY) {
+    static bool     hold             = false;
+    static uint32_t lastDebounceTime = 0;
+
+    if (!hold) {
+        bool reading = this->readPinCallback(this->buttonID);
         if (reading != this->state) {
-            this->state = reading;
-            int err     = this->stateChangeCallback(this->buttonID, reading);
+            this->state      = reading;
+            lastDebounceTime = millis();
+            hold             = true;
+            int err          = this->stateChangeCallback(this->buttonID, reading);
             if (err < BTN_EXIT_SUCCESS) {
                 return err;
             }
         }
+    } else {
+        if (millis() - lastDebounceTime > BTN_DEBOUNCE_DELAY) {
+            hold = false;
+        }
     }
-    this->lastState = reading;
     return BTN_EXIT_SUCCESS;
-}
-
-void Button::triggerClickEvent() {
-    this->stateChangeCallback(this->buttonID, true);
-    delay(80);
-    this->stateChangeCallback(this->buttonID, false);
 }
 
 bool Button::isPressed(void) {
