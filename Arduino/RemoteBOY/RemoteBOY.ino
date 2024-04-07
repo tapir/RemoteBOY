@@ -3,7 +3,6 @@
 #include "Button.h"
 #include "KeyMatrix.h"
 #include "LED.h"
-#include "esp_clk.h"
 
 static const size_t NUM_BUTTONS = NUM_ROWS * NUM_COLS;
 
@@ -31,10 +30,11 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
     { 2, 0 }, { 3, 0 }, { 3, 1 }, { 4, 0 }, { 4, 1 }
 };
 
-// sleep
-static const uint32_t SLEEP_TIMEOUT = 60000;
-uint32_t              sleepTimer    = millis();
+static const uint32_t TOGGLE_DELAY = 500;
+static const uint32_t BLINK_DELAY  = 2000;
+static const uint32_t IDLE_TIMEOUT = 60000;
 
+uint32_t  idleTimer = millis();
 Battery   battery;              // battery state
 LEDs      leds;                 // led state
 KeyMatrix matrix;               // key matrix state
@@ -62,13 +62,11 @@ void setup() {
 }
 
 void loop() {
-    static bool           btOnce        = false;
-    static uint32_t       lastBlinkTime = 0;
-    static const uint32_t TOGGLE_DELAY  = 500;
-    static const uint32_t BLINK_DELAY   = 2000;
+    static bool     btConnectOnce = false;
+    static uint32_t lastBlinkTime = 0;
 
     // power management sleep and wake-up point
-    if (millis() - sleepTimer > SLEEP_TIMEOUT) {
+    if (millis() - idleTimer > IDLE_TIMEOUT) {
         // btOnce = false;
         // blRemote.setDisconnected();
         sleep();
@@ -78,10 +76,10 @@ void loop() {
 
     // wait until bluetooth is connected
     if (!blRemote.isConnected()) {
-        if (!btOnce) {
+        if (!btConnectOnce) {
             leds.turnOn(LED1);
             leds.turnOff(LED2);
-            btOnce        = true;
+            btConnectOnce = true;
             lastBlinkTime = millis();
         }
         if (millis() - lastBlinkTime > TOGGLE_DELAY) {
@@ -92,10 +90,20 @@ void loop() {
         return;
     }
     // bluetooth connected
-    if (btOnce) {
+    if (btConnectOnce) {
         leds.turnOff(LED1);
         leds.turnOff(LED2);
-        btOnce = false;
+        btConnectOnce = false;
+    }
+
+    // scan key matrix
+    matrix.loop();
+
+    // process each button
+    for (int i = 0; i < NUM_BUTTONS; i++) {
+        if (buttons[i].loop() < BTN_EXIT_SUCCESS) {
+            break;
+        }
     }
 
     // update battery level
@@ -108,16 +116,6 @@ void loop() {
         if (millis() - lastTime > BLINK_DELAY) {
             leds.toggle(LED2);
             lastTime += BLINK_DELAY;
-        }
-    }
-
-    // scan key matrix
-    matrix.loop();
-
-    // process each button
-    for (int i = 0; i < NUM_BUTTONS; i++) {
-        if (buttons[i].loop() < BTN_EXIT_SUCCESS) {
-            break;
         }
     }
 }
@@ -225,7 +223,7 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
     }
 
     // reset sleep timer
-    sleepTimer = millis();
+    idleTimer = millis();
 
     return BTN_EXIT_SUCCESS;
 }
