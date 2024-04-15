@@ -1,10 +1,13 @@
 #include "BLERemote.h"
 #include "Battery.h"
 #include "Button.h"
+#include "ESPNow.h"
+#include "IRRemote.h"
 #include "KeyMatrix.h"
 #include "LED.h"
 
-static const size_t NUM_BUTTONS = NUM_ROWS * NUM_COLS;
+static const uint32_t BLINK_DELAY = 2000;
+static const size_t   NUM_BUTTONS = NUM_ROWS * NUM_COLS;
 
 // button IDs
 static const uint8_t BTN_ID_POWER   = 0;
@@ -30,16 +33,11 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
     { 2, 0 }, { 3, 0 }, { 3, 1 }, { 4, 0 }, { 4, 1 }
 };
 
-static const ButtonReport* BTN_BLE_MAP[NUM_BUTTONS] = {
-    &BLE_REMOTE_POWER, &BLE_REMOTE_SELECT, &BLE_REMOTE_UP, &BLE_REMOTE_LEFT, &BLE_REMOTE_RIGHT,
-    &BLE_REMOTE_DOWN, &BLE_REMOTE_BACK, &BLE_REMOTE_VOLUP, &BLE_REMOTE_HOME, &BLE_REMOTE_VOLDOWN
+// mapping of button IDs to HID CC codes
+static const uint8_t* BTN_HIDCC_MAP[NUM_BUTTONS] = {
+    ESPNOW_HID_NONE, ESPNOW_HID_SELECT, ESPNOW_HID_UP, ESPNOW_HID_LEFT, ESPNOW_HID_RIGHT,
+    ESPNOW_HID_DOWN, ESPNOW_HID_BACK, ESPNOW_HID_NONE, ESPNOW_HID_HOME, ESPNOW_HID_NONE
 };
-
-static const uint32_t SLEEP_DELAY   = 5000;
-static const uint32_t BT_CONN_DELAY = 700;
-static const uint32_t TOGGLE_DELAY  = 500;
-static const uint32_t BLINK_DELAY   = 2000;
-static const uint32_t IDLE_TIMEOUT  = 60000;
 
 static RTC_NOINIT_ATTR uint8_t wakeUpButton  = NUM_BUTTONS; // button that is pressed to wake device up
 static bool                    btConnectOnce = false;       // single run code on bt connect
@@ -48,12 +46,14 @@ static Battery                 battery;                     // battery state
 static LEDs                    leds;                        // led state
 static KeyMatrix               matrix;                      // key matrix state
 static Button                  buttons[NUM_BUTTONS];        // button states
-static BLERemote               blRemote;                    // bluetooth sender
+static IRRemote                irRemote;                    // IR sender
+static ESPNow                  nowRemote;                   // espnow sender
 
 void setup() {
+    irRemote.setup();
+    nowRemote.setup();
     battery.setup();
     leds.setup();
-    blRemote.setup("RemoteBOY", "Lola Engineering", battery.getLevel());
     matrix.setup();
     for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i].setup(i, &onButtonStateChange, &onReadPin);
@@ -72,44 +72,6 @@ void setup() {
 }
 
 void loop() {
-    static uint32_t lastBlinkTime = 0;
-
-    // power management sleep and wake-up point
-    if (millis() - idleTimer > IDLE_TIMEOUT) {
-        sleep();
-        wakeup();
-    }
-
-    // wait until bluetooth is connected
-    if (!blRemote.isConnected()) {
-        if (!btConnectOnce) {
-            leds.turnOn(LED1);
-            leds.turnOff(LED2);
-            btConnectOnce = true;
-            lastBlinkTime = millis();
-        }
-        if (millis() - lastBlinkTime > TOGGLE_DELAY) {
-            leds.toggle(LED1);
-            leds.toggle(LED2);
-            lastBlinkTime += TOGGLE_DELAY;
-        }
-        return;
-    }
-    // bluetooth connected
-    if (btConnectOnce) {
-        leds.turnOff(LED1);
-        leds.turnOff(LED2);
-        btConnectOnce = false;
-        delay(BT_CONN_DELAY);
-    }
-
-    // process the button that was pressed during sleep
-    if (wakeUpButton < NUM_BUTTONS) {
-        blRemote.click(*BTN_BLE_MAP[wakeUpButton]);
-        wakeUpButton = NUM_BUTTONS;
-        matrix.reset();
-    }
-
     // scan key matrix
     matrix.loop();
 
@@ -120,9 +82,11 @@ void loop() {
         }
     }
 
+    // ir repeat codes
+    irRemote.loop();
+
     // update battery level
     battery.loop();
-    blRemote.setBatteryLevel(battery.getLevel());
 
     // low battery indicator
     if (battery.getLevel() < 10) {
@@ -134,45 +98,45 @@ void loop() {
     }
 }
 
-void sleep() {
-    digitalWrite(GPIO_NUM_10, LOW);
-    digitalWrite(GPIO_NUM_21, LOW);
-    gpio_hold_en(GPIO_NUM_3);
-    gpio_hold_en(GPIO_NUM_4);
-    gpio_hold_en(GPIO_NUM_8);
-    gpio_hold_en(GPIO_NUM_9);
-    gpio_hold_en(GPIO_NUM_20);
-    gpio_hold_en(GPIO_NUM_10);
-    gpio_hold_en(GPIO_NUM_21);
+// void sleep() {
+//     digitalWrite(GPIO_NUM_10, LOW);
+//     digitalWrite(GPIO_NUM_21, LOW);
+//     gpio_hold_en(GPIO_NUM_3);
+//     gpio_hold_en(GPIO_NUM_4);
+//     gpio_hold_en(GPIO_NUM_8);
+//     gpio_hold_en(GPIO_NUM_9);
+//     gpio_hold_en(GPIO_NUM_20);
+//     gpio_hold_en(GPIO_NUM_10);
+//     gpio_hold_en(GPIO_NUM_21);
 
-    // cleanups
-    btConnectOnce = false;
-    blRemote.end();
-    matrix.reset();
-    delay(SLEEP_DELAY);
-    esp_light_sleep_start();
-}
+//     // cleanups
+//     btConnectOnce = false;
+//     blRemote.end();
+//     matrix.reset();
+//     delay(SLEEP_DELAY);
+//     esp_light_sleep_start();
+// }
 
-void wakeup() {
-    // for some reason restart doesn't clear hold states
-    gpio_hold_dis(GPIO_NUM_3);
-    gpio_hold_dis(GPIO_NUM_4);
-    gpio_hold_dis(GPIO_NUM_8);
-    gpio_hold_dis(GPIO_NUM_9);
-    gpio_hold_dis(GPIO_NUM_20);
-    gpio_hold_dis(GPIO_NUM_10);
-    gpio_hold_dis(GPIO_NUM_21);
-    digitalWrite(GPIO_NUM_10, HIGH);
-    digitalWrite(GPIO_NUM_21, HIGH);
-    matrix.loop();
-    for (int i = 0; i < NUM_BUTTONS; i++) {
-        if (matrix.getKeyState(BTN_MATRIX_MAP[i][0], BTN_MATRIX_MAP[i][1])) {
-            wakeUpButton = i;
-            break;
-        }
-    }
-    ESP.restart();
-}
+// void wakeup() {
+//     // for some reason restart doesn't clear hold states
+//     gpio_hold_dis(GPIO_NUM_3);
+//     gpio_hold_dis(GPIO_NUM_4);
+//     gpio_hold_dis(GPIO_NUM_8);
+//     gpio_hold_dis(GPIO_NUM_9);
+//     gpio_hold_dis(GPIO_NUM_20);
+//     gpio_hold_dis(GPIO_NUM_10);
+//     gpio_hold_dis(GPIO_NUM_21);
+//     digitalWrite(GPIO_NUM_10, HIGH);
+//     digitalWrite(GPIO_NUM_21, HIGH);
+//     matrix.loop();
+//     for (int i = 0; i < NUM_BUTTONS; i++) {
+//         if (matrix.getKeyState(BTN_MATRIX_MAP[i][0], BTN_MATRIX_MAP[i][1])) {
+//             wakeUpButton = i;
+//             break;
+//         }
+//     }
+//     ESP.restart();
+// }
 
 // this func is called by each button to read the pin state instead of
 // digitalRead() because we operate with a key matrix and not "a pin per
@@ -201,52 +165,28 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
     switch (buttonID) {
     case BTN_ID_VOLUP:
         if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
-            blRemote.click(BLE_REMOTE_MUTE);
+            irRemote.release();
+            irRemote.press(IR_REMOTE_VOLMUTE, false);
         } else {
-            state ? blRemote.press(BLE_REMOTE_VOLUP) : blRemote.release(BLE_REMOTE_VOLUP);
+            state ? irRemote.press(IR_REMOTE_VOLUP, true) : irRemote.release();
         }
         break;
     case BTN_ID_VOLDOWN:
         if (state && buttons[BTN_ID_VOLUP].isPressed()) {
-            blRemote.click(BLE_REMOTE_MUTE);
+            irRemote.release();
+            irRemote.press(IR_REMOTE_VOLMUTE, false);
         } else {
-            state ? blRemote.press(BLE_REMOTE_VOLDOWN) : blRemote.release(BLE_REMOTE_VOLDOWN);
+            state ? irRemote.press(IR_REMOTE_VOLDOWN, true) : irRemote.release();
         }
         break;
-    // case BTN_ID_SELECT:
-    //     if (state && buttons[BTN_ID_HOME].isPressed()) {
-    //         blRemote.click(BLE_REMOTE_MENU);
-    //     } else {
-    //         state ? blRemote.press(BLE_REMOTE_SELECT) : blRemote.release(BLE_REMOTE_SELECT);
-    //     }
-    //     break;
+    case BTN_ID_POWER:
+        if (state) {
+            irRemote.press(IR_REMOTE_POWER, false);
+        }
+        break;
     default:
-        state ? blRemote.press(*BTN_BLE_MAP[buttonID]) : blRemote.release(*BTN_BLE_MAP[buttonID]);
-        // case BTN_ID_POWER:
-        //     state ? blRemote.press(BLE_REMOTE_POWER) : blRemote.release(BLE_REMOTE_POWER);
-        //     break;
-        // case BTN_ID_BACK:
-        //     state ? blRemote.press(BLE_REMOTE_BACK) : blRemote.release(BLE_REMOTE_BACK);
-        //     break;
-        // case BTN_ID_HOME:
-        //     state ? blRemote.press(BLE_REMOTE_HOME) : blRemote.release(BLE_REMOTE_HOME);
-        //     break;
-        // case BTN_ID_UP:
-        //     state ? blRemote.press(BLE_REMOTE_UP) : blRemote.release(BLE_REMOTE_UP);
-        //     break;
-        // case BTN_ID_LEFT:
-        //     state ? blRemote.press(BLE_REMOTE_LEFT) : blRemote.release(BLE_REMOTE_LEFT);
-        //     break;
-        // case BTN_ID_RIGHT:
-        //     state ? blRemote.press(BLE_REMOTE_RIGHT) : blRemote.release(BLE_REMOTE_RIGHT);
-        //     break;
-        // case BTN_ID_DOWN:
-        //     state ? blRemote.press(BLE_REMOTE_DOWN) : blRemote.release(BLE_REMOTE_DOWN);
-        //     break;
+        state ? nowRemote.press(BTN_HIDCC_MAP[buttonID]) : nowRemote.release(BTN_HIDCC_MAP[buttonID]);
     }
-
-    // reset sleep timer
-    idleTimer = millis();
 
     return BTN_EXIT_SUCCESS;
 }
