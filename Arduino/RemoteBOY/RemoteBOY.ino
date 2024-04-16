@@ -1,10 +1,9 @@
-#include "BLERemote.h"
 #include "Battery.h"
 #include "Button.h"
-#include "ESPNow.h"
 #include "IRRemote.h"
 #include "KeyMatrix.h"
 #include "LED.h"
+#include "NowRemote.h"
 
 static const uint32_t BLINK_DELAY = 2000;
 static const size_t   NUM_BUTTONS = NUM_ROWS * NUM_COLS;
@@ -34,26 +33,23 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
 };
 
 // mapping of button IDs to HID CC codes
-static const uint8_t* BTN_ESPNOW_MAP[NUM_BUTTONS] = {
-    ESPNOW_HID_NONE, ESPNOW_HID_SELECT, ESPNOW_HID_UP, ESPNOW_HID_LEFT, ESPNOW_HID_RIGHT,
-    ESPNOW_HID_DOWN, ESPNOW_HID_BACK, ESPNOW_HID_NONE, ESPNOW_HID_HOME, ESPNOW_HID_NONE
+static const uint8_t* BTN_NOWREMOTE_MAP[NUM_BUTTONS] = {
+    NOWREMOTE_NONE, NOWREMOTE_SELECT, NOWREMOTE_UP, NOWREMOTE_LEFT, NOWREMOTE_RIGHT,
+    NOWREMOTE_DOWN, NOWREMOTE_BACK, NOWREMOTE_NONE, NOWREMOTE_HOME, NOWREMOTE_NONE
 };
 
-static RTC_NOINIT_ATTR uint8_t wakeUpButton  = NUM_BUTTONS; // button that is pressed to wake device up
-static bool                    btConnectOnce = false;       // single run code on bt connect
-static uint32_t                idleTimer     = millis();    // sleep timer
-static Battery                 battery;                     // battery state
-static LEDs                    leds;                        // led state
-static KeyMatrix               matrix;                      // key matrix state
-static Button                  buttons[NUM_BUTTONS];        // button states
-static IRRemote                irRemote;                    // IR sender
-static ESPNow                  nowRemote;                   // espnow sender
+static Battery   battery;              // battery state
+static LEDs      leds;                 // led state
+static KeyMatrix matrix;               // key matrix state
+static Button    buttons[NUM_BUTTONS]; // button states
+static IRRemote  irRemote;             // IR sender
+static NowRemote nowRemote;            // espnow sender
 
 void setup() {
-    irRemote.setup();
-    nowRemote.setup();
     battery.setup();
     leds.setup();
+    nowRemote.setup();
+    irRemote.setup();
     matrix.setup();
     for (int i = 0; i < NUM_BUTTONS; i++) {
         buttons[i].setup(i, &onButtonStateChange, &onReadPin);
@@ -175,7 +171,7 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
         }
         break;
     default:
-        state ? nowRemote.press(BTN_ESPNOW_MAP[buttonID]) : nowRemote.release(BTN_ESPNOW_MAP[buttonID]);
+        state ? nowRemote.press(BTN_NOWREMOTE_MAP[buttonID]) : nowRemote.release(BTN_NOWREMOTE_MAP[buttonID]);
     }
 
     // irRemote.release();

@@ -1,4 +1,4 @@
-#include "ESPNow.h"
+#include "NowRemote.h"
 #include <Arduino.h>
 #include <esp_now.h>
 #include <esp_wifi.h>
@@ -9,9 +9,9 @@ static const uint8_t       WIFI_CHANNEL       = 6;
 static const uint8_t       peerMac[6]         = { 0xF4, 0x12, 0xFA, 0x7A, 0x6A, 0xF8 };
 static esp_now_peer_info_t peerInfo;
 
-ESPNow::ESPNow(void) { }
+NowRemote::NowRemote(void) { }
 
-void ESPNow::setup(void) {
+void NowRemote::setup(void) {
     esp_netif_init();
     esp_event_loop_create_default();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -26,27 +26,27 @@ void ESPNow::setup(void) {
     esp_now_add_peer(&peerInfo);
 }
 
-void ESPNow::press(const uint8_t* buttonID) {
+void NowRemote::press(const uint8_t* buttonID) {
     this->send(buttonID, true);
 }
 
-void ESPNow::release(const uint8_t* buttonID) {
+void NowRemote::release(const uint8_t* buttonID) {
     this->send(buttonID, false);
 }
 
-void ESPNow::click(const uint8_t* buttonID) {
+void NowRemote::click(const uint8_t* buttonID) {
     this->send(buttonID, true);
     delay(ESPNOW_CLICK_DELAY);
     this->send(buttonID, false);
 }
 
-void ESPNow::send(const uint8_t* buttonID, bool state) {
+void NowRemote::send(const uint8_t* buttonID, bool state) {
     uint8_t data = state | buttonID[0] << 1 | buttonID[1] << 2;
     esp_now_send(peerMac, &data, 1);
 }
 
-void ESPNow::prepareSleep(void) {
+void NowRemote::prepareSleep(void) {
 }
 
-void ESPNow::prepareWakeUp(void) {
+void NowRemote::prepareWakeUp(void) {
 }
