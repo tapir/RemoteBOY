@@ -16,13 +16,14 @@ class ESPNow {
 public:
     ESPNow(void);
     void setup(void);
-    void press(const uint8_t* buttonHIDCode);
-    void release(const uint8_t* buttonHIDCode);
+    void press(const uint8_t* buttonID);
+    void release(const uint8_t* buttonID);
+    void click(const uint8_t* buttonID);
     void prepareSleep(void);
     void prepareWakeUp(void);
 
 private:
-    void send(const uint8_t* buttonHIDCode, bool state);
+    void send(const uint8_t* buttonID, bool state);
 };
 
 #endif // ESPNOW_H

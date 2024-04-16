@@ -34,7 +34,7 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
 };
 
 // mapping of button IDs to HID CC codes
-static const uint8_t* BTN_HIDCC_MAP[NUM_BUTTONS] = {
+static const uint8_t* BTN_ESPNOW_MAP[NUM_BUTTONS] = {
     ESPNOW_HID_NONE, ESPNOW_HID_SELECT, ESPNOW_HID_UP, ESPNOW_HID_LEFT, ESPNOW_HID_RIGHT,
     ESPNOW_HID_DOWN, ESPNOW_HID_BACK, ESPNOW_HID_NONE, ESPNOW_HID_HOME, ESPNOW_HID_NONE
 };
@@ -164,20 +164,10 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
 
     switch (buttonID) {
     case BTN_ID_VOLUP:
-        if (state && buttons[BTN_ID_VOLDOWN].isPressed()) {
-            irRemote.release();
-            irRemote.press(IR_REMOTE_VOLMUTE, false);
-        } else {
-            state ? irRemote.press(IR_REMOTE_VOLUP, true) : irRemote.release();
-        }
+        state ? irRemote.press(IR_REMOTE_VOLUP, true) : irRemote.release();
         break;
     case BTN_ID_VOLDOWN:
-        if (state && buttons[BTN_ID_VOLUP].isPressed()) {
-            irRemote.release();
-            irRemote.press(IR_REMOTE_VOLMUTE, false);
-        } else {
-            state ? irRemote.press(IR_REMOTE_VOLDOWN, true) : irRemote.release();
-        }
+        state ? irRemote.press(IR_REMOTE_VOLDOWN, true) : irRemote.release();
         break;
     case BTN_ID_POWER:
         if (state) {
@@ -185,8 +175,11 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
         }
         break;
     default:
-        state ? nowRemote.press(BTN_HIDCC_MAP[buttonID]) : nowRemote.release(BTN_HIDCC_MAP[buttonID]);
+        state ? nowRemote.press(BTN_ESPNOW_MAP[buttonID]) : nowRemote.release(BTN_ESPNOW_MAP[buttonID]);
     }
+
+    // irRemote.release();
+    // irRemote.press(IR_REMOTE_VOLMUTE, false);
 
     return BTN_EXIT_SUCCESS;
 }
