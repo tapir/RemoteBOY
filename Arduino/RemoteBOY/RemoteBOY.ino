@@ -5,8 +5,8 @@
 #include "LED.h"
 #include "NowRemote.h"
 
-static const uint32_t BLINK_DELAY = 2000;
-static const size_t   NUM_BUTTONS = NUM_ROWS * NUM_COLS;
+static const uint8_t LOW_BATTERY_LEVEL = 10;
+static const size_t  NUM_BUTTONS       = NUM_ROWS * NUM_COLS;
 
 // button IDs
 static const uint8_t BTN_ID_POWER   = 0;
@@ -33,9 +33,9 @@ static const size_t BTN_MATRIX_MAP[NUM_BUTTONS][2] = {
 };
 
 // mapping of button IDs to HID CC codes
-static const uint8_t* BTN_NOWREMOTE_MAP[NUM_BUTTONS] = {
-    NOWREMOTE_NONE, NOWREMOTE_SELECT, NOWREMOTE_UP, NOWREMOTE_LEFT, NOWREMOTE_RIGHT,
-    NOWREMOTE_DOWN, NOWREMOTE_BACK, NOWREMOTE_NONE, NOWREMOTE_HOME, NOWREMOTE_NONE
+static const uint8_t* BTN_NOW_REMOTE_MAP[NUM_BUTTONS] = {
+    NOW_REMOTE_NONE, NOW_REMOTE_SELECT, NOW_REMOTE_UP, NOW_REMOTE_LEFT, NOW_REMOTE_RIGHT,
+    NOW_REMOTE_DOWN, NOW_REMOTE_BACK, NOW_REMOTE_NONE, NOW_REMOTE_HOME, NOW_REMOTE_NONE
 };
 
 static Battery   battery;              // battery state
@@ -44,6 +44,42 @@ static KeyMatrix matrix;               // key matrix state
 static Button    buttons[NUM_BUTTONS]; // button states
 static IRRemote  irRemote;             // IR sender
 static NowRemote nowRemote;            // espnow sender
+
+void sleep() {
+    digitalWrite(GPIO_NUM_10, LOW);
+    digitalWrite(GPIO_NUM_21, LOW);
+    gpio_hold_en(GPIO_NUM_3);
+    gpio_hold_en(GPIO_NUM_4);
+    gpio_hold_en(GPIO_NUM_8);
+    gpio_hold_en(GPIO_NUM_9);
+    gpio_hold_en(GPIO_NUM_20);
+    gpio_hold_en(GPIO_NUM_10);
+    gpio_hold_en(GPIO_NUM_21);
+
+    // cleanups
+    leds.turnOff(LED1);
+    leds.turnOff(LED2);
+    matrix.reset();
+    for (int i = 0; i < NUM_BUTTONS; i++) {
+        buttons[i].reset();
+    }
+    nowRemote.prepareSleep();
+    esp_light_sleep_start();
+}
+
+void wakeup() {
+    nowRemote.prepareWakeUp();
+    // for some reason restart doesn't clear hold states
+    gpio_hold_dis(GPIO_NUM_3);
+    gpio_hold_dis(GPIO_NUM_4);
+    gpio_hold_dis(GPIO_NUM_8);
+    gpio_hold_dis(GPIO_NUM_9);
+    gpio_hold_dis(GPIO_NUM_20);
+    gpio_hold_dis(GPIO_NUM_10);
+    gpio_hold_dis(GPIO_NUM_21);
+    digitalWrite(GPIO_NUM_10, HIGH);
+    digitalWrite(GPIO_NUM_21, HIGH);
+}
 
 void setup() {
     battery.setup();
@@ -63,11 +99,32 @@ void setup() {
     gpio_wakeup_enable(GPIO_NUM_20, GPIO_INTR_LOW_LEVEL);
     esp_sleep_enable_gpio_wakeup();
 
-    // Serial.begin(115200);
-    // Serial.flush();
+    // programming helper for when in sleep
+    leds.turnOn(LED1);
+    leds.turnOff(LED2);
+    for (int i = 0; i < 10; i++) {
+        leds.toggle(LED1);
+        leds.toggle(LED2);
+        delay(500);
+    }
+    leds.turnOff(LED1);
+    leds.turnOff(LED2);
 }
 
 void loop() {
+    // sleep as soon as possible if buttons are not kept pressed
+    bool anyButton = false;
+    for (int i = 0; i < NUM_BUTTONS; i++) {
+        if (buttons[i].isPressed()) {
+            anyButton = true;
+            break;
+        }
+    }
+    if (!anyButton) {
+        sleep();
+        wakeup();
+    }
+
     // scan key matrix
     matrix.loop();
 
@@ -78,61 +135,12 @@ void loop() {
         }
     }
 
-    // ir repeat codes
+    // repeat IR codes if any
     irRemote.loop();
 
-    // update battery level
+    // battery level update
     battery.loop();
-
-    // low battery indicator
-    if (battery.getLevel() < 10) {
-        static uint32_t lastTime = 0;
-        if (millis() - lastTime > BLINK_DELAY) {
-            leds.toggle(LED2);
-            lastTime += BLINK_DELAY;
-        }
-    }
 }
-
-// void sleep() {
-//     digitalWrite(GPIO_NUM_10, LOW);
-//     digitalWrite(GPIO_NUM_21, LOW);
-//     gpio_hold_en(GPIO_NUM_3);
-//     gpio_hold_en(GPIO_NUM_4);
-//     gpio_hold_en(GPIO_NUM_8);
-//     gpio_hold_en(GPIO_NUM_9);
-//     gpio_hold_en(GPIO_NUM_20);
-//     gpio_hold_en(GPIO_NUM_10);
-//     gpio_hold_en(GPIO_NUM_21);
-
-//     // cleanups
-//     btConnectOnce = false;
-//     blRemote.end();
-//     matrix.reset();
-//     delay(SLEEP_DELAY);
-//     esp_light_sleep_start();
-// }
-
-// void wakeup() {
-//     // for some reason restart doesn't clear hold states
-//     gpio_hold_dis(GPIO_NUM_3);
-//     gpio_hold_dis(GPIO_NUM_4);
-//     gpio_hold_dis(GPIO_NUM_8);
-//     gpio_hold_dis(GPIO_NUM_9);
-//     gpio_hold_dis(GPIO_NUM_20);
-//     gpio_hold_dis(GPIO_NUM_10);
-//     gpio_hold_dis(GPIO_NUM_21);
-//     digitalWrite(GPIO_NUM_10, HIGH);
-//     digitalWrite(GPIO_NUM_21, HIGH);
-//     matrix.loop();
-//     for (int i = 0; i < NUM_BUTTONS; i++) {
-//         if (matrix.getKeyState(BTN_MATRIX_MAP[i][0], BTN_MATRIX_MAP[i][1])) {
-//             wakeUpButton = i;
-//             break;
-//         }
-//     }
-//     ESP.restart();
-// }
 
 // this func is called by each button to read the pin state instead of
 // digitalRead() because we operate with a key matrix and not "a pin per
@@ -148,13 +156,20 @@ int onReadPin(const uint8_t buttonID) {
 int onButtonStateChange(const uint8_t buttonID, bool state) {
     if (state) {
         leds.turnOn(LED1);
-    } else {
-        bool anyPressed = false;
-        for (int i = 0; i < NUM_BUTTONS; i++) {
-            anyPressed |= buttons[i].isPressed();
+        if (battery.getLevel() < LOW_BATTERY_LEVEL) {
+            leds.turnOn(LED2);
         }
-        if (!anyPressed) {
+    } else {
+        bool anyButton = false;
+        for (int i = 0; i < NUM_BUTTONS; i++) {
+            if (buttons[i].isPressed()) {
+                anyButton = true;
+                break;
+            }
+        }
+        if (!anyButton) {
             leds.turnOff(LED1);
+            leds.turnOff(LED2);
         }
     }
 
@@ -166,16 +181,30 @@ int onButtonStateChange(const uint8_t buttonID, bool state) {
         state ? irRemote.press(IR_REMOTE_VOLDOWN, true) : irRemote.release();
         break;
     case BTN_ID_POWER:
-        if (state) {
-            irRemote.press(IR_REMOTE_POWER, false);
-        }
+        state ? irRemote.press(IR_REMOTE_POWER, false) : irRemote.release();
         break;
-    default:
-        state ? nowRemote.press(BTN_NOWREMOTE_MAP[buttonID]) : nowRemote.release(BTN_NOWREMOTE_MAP[buttonID]);
+    case BTN_ID_SELECT:
+        state ? nowRemote.press(NOW_REMOTE_SELECT) : nowRemote.release(NOW_REMOTE_SELECT);
+        break;
+    case BTN_ID_UP:
+        state ? nowRemote.press(NOW_REMOTE_UP) : nowRemote.release(NOW_REMOTE_UP);
+        break;
+    case BTN_ID_LEFT:
+        state ? nowRemote.press(NOW_REMOTE_LEFT) : nowRemote.release(NOW_REMOTE_LEFT);
+        break;
+    case BTN_ID_RIGHT:
+        state ? nowRemote.press(NOW_REMOTE_RIGHT) : nowRemote.release(NOW_REMOTE_RIGHT);
+        break;
+    case BTN_ID_DOWN:
+        state ? nowRemote.press(NOW_REMOTE_DOWN) : nowRemote.release(NOW_REMOTE_DOWN);
+        break;
+    case BTN_ID_BACK:
+        state ? nowRemote.press(NOW_REMOTE_BACK) : nowRemote.release(NOW_REMOTE_BACK);
+        break;
+    case BTN_ID_HOME:
+        state ? nowRemote.press(NOW_REMOTE_HOME) : nowRemote.release(NOW_REMOTE_HOME);
+        break;
     }
-
-    // irRemote.release();
-    // irRemote.press(IR_REMOTE_VOLMUTE, false);
 
     return BTN_EXIT_SUCCESS;
 }

@@ -12,6 +12,10 @@ void Button::setup(const uint8_t buttonID, int (*stateChangeCallback)(const uint
     this->state               = false;
 }
 
+void Button::reset(void) {
+    this->state = false;
+}
+
 int Button::loop(void) {
     static bool     hold             = false;
     static uint32_t lastDebounceTime = 0;

@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+static const uint32_t BTN_EXIT_EARLY   = -1;
 static const uint32_t BTN_EXIT_SUCCESS = 0;
 
 class Button {
@@ -11,6 +12,7 @@ public:
     void setup(const uint8_t buttonID, int (*stateChangeCallback)(const uint8_t, bool), int (*readPinCallback)(const uint8_t));
     int  loop(void);
     bool isPressed(void);
+    void reset(void);
 
 private:
     int  buttonID;
