@@ -26,7 +26,7 @@ void KeyMatrix::setup(void) {
     // key matrix initial state
     for (int c = 0; c < NUM_COLS; c++) {
         for (int r = 0; r < NUM_ROWS; r++) {
-            this->state[r][c] = 0;
+            this->state[r][c] = false;
         }
         digitalWrite(colPins[c], HIGH);
     }
@@ -46,12 +46,12 @@ void KeyMatrix::loop(void) {
 void KeyMatrix::reset(void) {
     for (int c = 0; c < NUM_COLS; c++) {
         for (int r = 0; r < NUM_ROWS; r++) {
-            this->state[r][c] = 0;
+            this->state[r][c] = false;
         }
     }
 }
 
-int KeyMatrix::getKeyState(size_t row, size_t col) {
+bool KeyMatrix::getKeyState(const size_t row, const size_t col) {
     if (row < NUM_ROWS && col < NUM_COLS) {
         return this->state[row][col];
     }

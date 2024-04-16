@@ -11,6 +11,7 @@ static const uint8_t ESPNOW_HID_LEFT[2]   = { 0, 7 };  // Menu Left
 static const uint8_t ESPNOW_HID_RIGHT[2]  = { 0, 3 };  // Menu Right
 static const uint8_t ESPNOW_HID_HOME[2]   = { 1, 12 }; // Home
 static const uint8_t ESPNOW_HID_NONE[2]   = { 0, 0 };  // None
+static const uint8_t ESPNOW_HID_MENU[2]   = { 1, 6 };  // Menu
 
 class ESPNow {
 public:

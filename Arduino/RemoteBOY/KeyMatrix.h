@@ -12,10 +12,10 @@ public:
     void setup(void);
     void loop(void);
     void reset(void);
-    int  getKeyState(size_t row, size_t col);
+    bool getKeyState(const size_t row, const size_t col);
 
 private:
-    int state[NUM_ROWS][NUM_COLS];
+    bool state[NUM_ROWS][NUM_COLS];
 };
 
 #endif // MATRIX_H

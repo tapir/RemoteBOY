@@ -16,6 +16,7 @@ int Button::loop(void) {
     static bool     hold             = false;
     static uint32_t lastDebounceTime = 0;
 
+    // we act on first stage and ignore all state changes after that for the deboucne delay duration
     if (!hold) {
         bool reading = this->readPinCallback(this->buttonID);
         if (reading != this->state) {

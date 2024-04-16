@@ -14,7 +14,7 @@ public:
     IRRemote(void);
     ~IRRemote(void);
     void setup(void);
-    void press(uint32_t irCode, bool repeat);
+    void press(const uint32_t irCode, bool repeat);
     void release(void);
     void loop(void);
 

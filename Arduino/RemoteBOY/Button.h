@@ -3,8 +3,7 @@
 
 #include <stdint.h>
 
-static const uint32_t BTN_EXIT_BT_DISCONNECT = -1;
-static const uint32_t BTN_EXIT_SUCCESS       = 0;
+static const uint32_t BTN_EXIT_SUCCESS = 0;
 
 class Button {
 public:
